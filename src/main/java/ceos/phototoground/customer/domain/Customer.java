@@ -2,7 +2,7 @@ package ceos.phototoground.customer.domain;
 
 import ceos.phototoground.global.BaseTimeEntity;
 import ceos.phototoground.photographer.domain.Gender;
-import ceos.phototoground.photographer.domain.School;
+import ceos.phototoground.photographer.domain.MyUniv;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -40,5 +40,5 @@ public class Customer extends BaseTimeEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private School school;
+    private MyUniv myUniv;
 }

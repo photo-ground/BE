@@ -1,8 +1,7 @@
-package ceos.phototoground.mapping.domain;
+package ceos.phototoground.univ.domain;
 
 import ceos.phototoground.global.BaseTimeEntity;
 import ceos.phototoground.photographer.domain.Photographer;
-import ceos.phototoground.univ.domain.Univ;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor(access= AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-public class Photographer_Univ extends BaseTimeEntity {
+public class PhotographerUniv extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

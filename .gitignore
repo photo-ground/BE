@@ -1,3 +1,7 @@
+/resources
+application.yml
+application-prod.yml
+application-local.yml
 HELP.md
 .gradle
 build/
