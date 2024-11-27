@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -41,11 +42,12 @@ public class PostImageService {
             throw new IllegalArgumentException("이미지와 스팟 태그의 개수가 일치하지 않습니다. 모든 사진에 스팟장소 태그를 달아주세요.");
         }
 
-        //spot id -> spot
+        //spot id -> spot 객체
         List<Spot> spotList=spotService.findSpotsById(spotIds);
 
-        List<PostImage> postImages=new ArrayList<>();
 
+        //비동기적으로 이미지 업로드 작업 수행
+        List<CompletableFuture<PostImage>> futures=new ArrayList<>();
         //파일 s3에 업로드하고 반환된 url로 postImage 객체 생성
         for(int i=0 ; i<files.size() ; i++){ //비동기식으로 하면 순서보장 안돼서 조회할 때 imageOrder ASC 조건 걸어서 보여주기
             int order = i+1;
@@ -53,22 +55,27 @@ public class PostImageService {
             Spot spot = spotList.get(i);
 
             //S3에 이미지 업로드 후 url 반환
-            String url = s3ImageService.saveImage(image, "post");
+            CompletableFuture<PostImage> future = s3ImageService.saveImage(image, "post")
+                    //url 이용해 PostImage 객체 생성
+                    .thenApply(url -> PostImage.builder()
+                            .imageUrl(url)
+                            .originalFileName(image.getOriginalFilename()) //MultipartFile 인터페이스에서 제공하는 메소드
+                            .imageOrder(order)
+                            .post(post)
+                            .spot(spot)
+                            .build());
 
-            //url 이용해 PostImage 객체 생성
-            PostImage postImage = PostImage.builder()
-                    .imageUrl(url)
-                    .originalFileName(image.getOriginalFilename()) //MultipartFile 인터페이스에서 제공하는 메소드
-                    .imageOrder(order)
-                    .post(post)
-                    .spot(spot)
-                    .build();
-
-            //반환할 postImages 리스트에 postImage 추가
-            postImages.add(postImage);
+            futures.add(future);
         }
 
-        return postImages;
+        //모든 업로드 작업이 완료될 때까지 기다리고 실행 (List<CompletableFuture<PostImage>> -> List<PostImage>)
+        CompletableFuture<List<PostImage>> allImagesFuture = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(v -> futures.stream()
+                        .map(CompletableFuture::join)
+                        .toList());
+
+        //CompletableFuture<List<PostImage>> -> List<PostImage>
+        return allImagesFuture.join();
 
     }
 
