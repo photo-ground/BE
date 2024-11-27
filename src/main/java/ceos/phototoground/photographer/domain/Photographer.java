@@ -33,10 +33,8 @@ public class Photographer extends BaseTimeEntity {
     @NotNull
     private int bornYear;
 
-    @Column(nullable = false)
-    private int followerCount = 0; // 팔로워 수
-
     @NotNull
     @Enumerated(EnumType.STRING)
     private MyUniv myUniv; //작가의 대학교
+
 }

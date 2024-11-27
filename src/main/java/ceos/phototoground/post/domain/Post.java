@@ -32,4 +32,7 @@ public class Post extends BaseTimeEntity {
     private Univ univ;
 
 
+    public void mapFirstImageUrl(String firstImageUrl) {
+        this.firstImageUrl = firstImageUrl;
+    }
 }

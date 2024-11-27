@@ -34,6 +34,9 @@ dependencies {
 
 	// @NotNull 같은 제약조건을 달아줄 수 있는 Bean Validation 사용 위해 설치
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// S3를 이용한 이미지 저장
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 tasks.named('test') {
