@@ -6,7 +6,6 @@ application-green.yml
 application-blue.yml
 application-common.yml
 
-
 HELP.md
 .gradle
 build/
