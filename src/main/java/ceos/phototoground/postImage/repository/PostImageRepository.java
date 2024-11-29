@@ -1,13 +1,11 @@
 package ceos.phototoground.postImage.repository;
 
-import ceos.phototoground.photoProfile.domain.PhotoProfile;
 import ceos.phototoground.postImage.domain.PostImage;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface PostImageRepository extends JpaRepository<PostImage, Long> {
@@ -16,4 +14,6 @@ public interface PostImageRepository extends JpaRepository<PostImage, Long> {
     List<String> findImageUrlsByPost_Id(@Param("postId") Long postId);
 
     void deleteByPost_Id(Long postId);
+
+    List<PostImage> findByPost_Id(Long postId);
 }
