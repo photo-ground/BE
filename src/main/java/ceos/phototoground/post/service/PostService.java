@@ -1,5 +1,7 @@
 package ceos.phototoground.post.service;
 
+import ceos.phototoground.photoProfile.domain.PhotoProfile;
+import ceos.phototoground.photoProfile.service.PhotoProfileService;
 import ceos.phototoground.photographer.domain.Photographer;
 import ceos.phototoground.photographer.service.PhotographerService;
 import ceos.phototoground.post.domain.Post;
@@ -26,6 +28,8 @@ public class PostService {
     private final PhotographerService photographerService;
     private final UnivService univService;
     private final PostImageService postImageService;
+
+    private final PhotoProfileService photoProfileService;
 
     @Transactional
     public void createPost(PostRequestDTO dto, List<MultipartFile> photos, Long photographerId) {
@@ -77,7 +81,9 @@ public class PostService {
 
         List<PostImageResponseDTO> imageListDto = postImageService.getPostImages(postId);
 
-        PostResponseDTO dto = PostResponseDTO.of(post, imageListDto);
+        PhotoProfile profile = photoProfileService.findProfileByPhotographerId(post.getPhotographer().getId());
+
+        PostResponseDTO dto = PostResponseDTO.of(post, imageListDto, profile);
 
         return dto;
 

@@ -1,5 +1,6 @@
 package ceos.phototoground.post.dto;
 
+import ceos.phototoground.photoProfile.domain.PhotoProfile;
 import ceos.phototoground.post.domain.Post;
 import ceos.phototoground.postImage.dto.PostImageResponseDTO;
 import java.time.LocalDateTime;
@@ -18,11 +19,11 @@ public class PostResponseDTO {
     private List<PostImageResponseDTO> imageList;
     private LocalDateTime createdAt;
 
-    public static PostResponseDTO of(Post post, List<PostImageResponseDTO> imageListDto) {
+    public static PostResponseDTO of(Post post, List<PostImageResponseDTO> imageListDto, PhotoProfile profile) {
         return PostResponseDTO.builder()
                 .id(post.getId())
                 .photographerId(post.getPhotographer().getId())
-                .photographerName(post.getPhotographer().get)
+                .photographerName(profile.getNickname())
                 .content(post.getContent())
                 .univName(post.getUniv().getName())
                 .imageList(imageListDto)
