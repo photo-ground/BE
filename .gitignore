@@ -1,7 +1,11 @@
 /resources
 application.yml
-application-prod.yml
 application-local.yml
+application-secret.yml
+application-green.yml
+application-blue.yml
+application-common.yml
+
 HELP.md
 .gradle
 build/
