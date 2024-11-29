@@ -23,12 +23,13 @@ public class PostImageService {
     private final S3ImageService s3ImageService;
     private final SpotService spotService;
 
+    //게시글 이미지 Repository에 저장
     @Transactional
     public void save(List<PostImage> postImages){
         postImageRepository.saveAll(postImages);
     }
 
-
+    //MultipartFile->PostImage & S3에 이미지 저장
     @Transactional
     public List<PostImage> toPostImages(List<MultipartFile> files, Post post, List<Long> spotIds){
 
@@ -79,5 +80,15 @@ public class PostImageService {
 
     }
 
+    //게시글이미지 삭제 (deletePost에만 @Transactional 붙여 하나의 트랜잭션에 포함되게)
+    public void deletePostImages(Long postId) {
 
+        List<String> urls = postImageRepository.findImageUrlsByPost_Id(postId);
+        postImageRepository.deleteByPost_Id(postId);
+
+        // 트랜잭션 밖에서 S3 이미지 삭제하는 게 나을까,,,? (데이터베이스 작업 완료 후) 그럼 데베는 롤백됐는데 s3는 삭제되어버리는 문제 발생
+        s3ImageService.deletePostImages(urls);
+
+
+    }
 }

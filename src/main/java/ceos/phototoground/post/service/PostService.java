@@ -52,4 +52,21 @@ public class PostService {
 
         postRepository.save(newPost);
     }
+
+    @Transactional
+    public void deletePost(Long postId, Long photographerId) {
+
+        // 존재하는 게시글인지 확인 & 로그인한 유저 == 게시글작성자 검증
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("해당 id의 게시글이 존재하지 않습니다."));
+        if(!photographerId.equals(post.getPhotographer().getId())){
+            throw new IllegalArgumentException("게시글 작성자와 로그인 한 사용자가 일치하지 않습니다.");
+        }
+
+
+        //이미지 삭제
+        postImageService.deletePostImages(postId);
+
+        //게시글 삭제
+        postRepository.delete(post);
+    }
 }
