@@ -22,6 +22,12 @@ jobs:
 
       - name: Build with Gradle
         run: |
+          echo ${{ secrets.APPLICATION }} | base64 --decode > ./src/main/resources/application.yml
+          echo ${{ secrets.APPLICATION_SECRET }} | base64 --decode > ./src/main/resources/application-secret.yml
+          echo ${{ secrets.APPLICATION_COMMON }} | base64 --decode > ./src/main/resources/application-common.yml
+          echo ${{ secrets.APPLICATION_BLUE }} | base64 --decode > ./src/main/resources/application-blue.yml
+          echo ${{ secrets.APPLICATION_GREEN }} | base64 --decode > ./src/main/resources/application-green.yml
+          echo ${{ secrets.APPLICATION_LOCAL }} | base64 --decode > ./src/main/resources/application-local.yml
           chmod 777 ./gradlew
           ./gradlew clean build -x test  #jar파일 생성
 
