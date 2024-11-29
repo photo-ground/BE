@@ -27,7 +27,7 @@ public class Reservation extends BaseTimeEntity {
     private Long id;
 
     @NotNull
-    private int bookingNum;
+    private int reserveNum;
 
     @NotNull
     @Enumerated(EnumType.STRING)
