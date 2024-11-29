@@ -40,30 +40,27 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Set target IP
+      - name: Set target IP  #현재 실행되고 있는애가 blue인지 green인지 확인 (blue면 green으로 바꿔주고, green이면 blue로 바꿔줘야함)
         run: |
           STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.PHOTOGROUND_SERVER_IP }}/env")
           echo $STATUS
           if [ $STATUS = 200 ]; then
-            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.PHOTOGROUND_SERVER_IP }}/env")
+            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.PHOTOGROUND_SERVER_IP }}/env")  
           else
             CURRENT_UPSTREAM=green
           fi
-          echo CURRENT_UPSTREAM=$CURRENT_UPSTREAM >> $GITHUB_ENV
+          echo CURRENT_UPSTREAM=$CURRENT_UPSTREAM >> $GITHUB_ENV  #githubactions에 담은 전역변수
           if [ $CURRENT_UPSTREAM = blue ]; then
             echo "CURRENT_PORT=8080" >> $GITHUB_ENV
             echo "STOPPED_PORT=8081" >> $GITHUB_ENV
             echo "TARGET_UPSTREAM=green" >> $GITHUB_ENV
-          elif [ $CURRENT_UPSTREAM = green ]; then
+          else
             echo "CURRENT_PORT=8081" >> $GITHUB_ENV
             echo "STOPPED_PORT=8080" >> $GITHUB_ENV
             echo "TARGET_UPSTREAM=blue" >> $GITHUB_ENV
-          else
-            echo "error"
-            exit 1
           fi
           
-      - name: Docker compose
+      - name: Docker compose  #ec2로 이동해서 ec2에 접속
         uses: appleboy/ssh-action@master
         with:
           username: ubuntu
@@ -74,7 +71,7 @@ jobs:
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/photoground_server:latest
             sudo docker-compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
       
-      - name: Check deploy server URL
+      - name: Check deploy server URL   #스프링부트 서버가 완전히 켜져야 nginx가 blue->green으로 바꿔줌. 따라서 green이 정상적으로 돌아가는지 health check필요
         uses: jtalk/url-health-check-action@v3
         with:
           url: http://${{ secrets.PHOTOGROUND_SERVER_IP }}:${{env.STOPPED_PORT}}/env
