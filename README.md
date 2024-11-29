@@ -4,6 +4,7 @@
 | 🛠️ build | 빌드 및 외부 종속성에 영향을 미치는 변경 ex) npm 설정 |
 | 🔧 chore | 기타 수정들 ex) .gitignore |
 | 👷 ci | CI 설정 혹은 스크립트 추가 및 수정 |
+| 🚀 deploy | 배포 관련 |
 | 💡comment | 주석 추가/업데이트 |
 | 📝 docs | 문서 파일 추가 및 수정 ex) readme.md |
 | ✨ feat | 새로운 기능 추가 및 수정 |
