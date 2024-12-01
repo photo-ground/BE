@@ -2,6 +2,7 @@ package ceos.phototoground.post.controller;
 
 import ceos.phototoground.post.dto.PostRequestDTO;
 import ceos.phototoground.post.dto.PostResponseDTO;
+import ceos.phototoground.post.dto.PostsListResponseDTO;
 import ceos.phototoground.post.service.PostService;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,6 +58,19 @@ public class PostController {
     public ResponseEntity<PostResponseDTO> getPost(@PathVariable Long postId) {
 
         PostResponseDTO dto = postService.getPost(postId);
+
+        return ResponseEntity.ok(dto);
+    }
+
+
+    // 특정 학교 게시글 조회
+    @GetMapping
+    public ResponseEntity<PostsListResponseDTO> getUnivPosts(
+            @RequestParam(value = "univ", required = true) String univ,
+            @RequestParam(value = "cursor", required = false) Long cursor, //맨 첫 데이터 요청할 때는 프론트측에서 안 보낼거라
+            @RequestParam(value = "size", defaultValue = "15", required = false) int size) {
+
+        PostsListResponseDTO dto = postService.getUnivPosts(univ, cursor, size);
 
         return ResponseEntity.ok(dto);
     }

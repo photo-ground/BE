@@ -16,4 +16,6 @@ public interface PostImageRepository extends JpaRepository<PostImage, Long> {
     void deleteByPost_Id(Long postId);
 
     List<PostImage> findByPost_Id(Long postId);
+
+    PostImage findByImageUrl(String firstImageUrl);
 }

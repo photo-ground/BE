@@ -103,4 +103,9 @@ public class PostImageService {
         return imageListDto;
 
     }
+
+    public PostImage findImageByImageUrl(String firstImageUrl) {
+
+        return postImageRepository.findByImageUrl(firstImageUrl);
+    }
 }

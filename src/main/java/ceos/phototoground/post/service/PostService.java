@@ -5,14 +5,22 @@ import ceos.phototoground.photoProfile.service.PhotoProfileService;
 import ceos.phototoground.photographer.domain.Photographer;
 import ceos.phototoground.photographer.service.PhotographerService;
 import ceos.phototoground.post.domain.Post;
+import ceos.phototoground.post.domain.QPost;
+import ceos.phototoground.post.dto.PostListResponseDTO;
 import ceos.phototoground.post.dto.PostRequestDTO;
 import ceos.phototoground.post.dto.PostResponseDTO;
+import ceos.phototoground.post.dto.PostsListResponseDTO;
 import ceos.phototoground.post.repository.PostRepository;
 import ceos.phototoground.postImage.domain.PostImage;
+import ceos.phototoground.postImage.domain.QPostImage;
 import ceos.phototoground.postImage.dto.PostImageResponseDTO;
 import ceos.phototoground.postImage.service.PostImageService;
+import ceos.phototoground.spot.domain.Spot;
+import ceos.phototoground.spot.service.SpotService;
 import ceos.phototoground.univ.domain.Univ;
 import ceos.phototoground.univ.service.UnivService;
+import com.querydsl.core.Tuple;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +38,7 @@ public class PostService {
     private final PostImageService postImageService;
 
     private final PhotoProfileService photoProfileService;
+    private final SpotService spotService;
 
     @Transactional
     public void createPost(PostRequestDTO dto, List<MultipartFile> photos, Long photographerId) {
@@ -57,6 +66,7 @@ public class PostService {
         postRepository.save(newPost);
     }
 
+
     @Transactional
     public void deletePost(Long postId, Long photographerId) {
 
@@ -74,6 +84,7 @@ public class PostService {
         postRepository.delete(post);
     }
 
+
     public PostResponseDTO getPost(Long postId) {
         //이미지 order대로 반환해주기
         Post post = postRepository.findById(postId)
@@ -81,11 +92,48 @@ public class PostService {
 
         List<PostImageResponseDTO> imageListDto = postImageService.getPostImages(postId);
 
-        PhotoProfile profile = photoProfileService.findProfileByPhotographerId(post.getPhotographer().getId());
+        PhotoProfile profile = post.getPhotographer().getPhotoProfile();
 
         PostResponseDTO dto = PostResponseDTO.of(post, imageListDto, profile);
 
         return dto;
 
     }
+
+
+    public PostsListResponseDTO getUnivPosts(String univ, Long cursor, int size) {
+
+        //다음 페이지 데이터가 있는지 확인하기 위해 size+1 개 만큼 가져옴
+        List<Tuple> postWithImageList = postRepository.findPostsAndImagesByUnivWithNoOffset(univ, cursor, size + 1);
+
+        List<PostListResponseDTO> dtos = new ArrayList<>();
+
+        boolean hasNext = false;
+
+        if (postWithImageList.size() > size) {
+            hasNext = true;
+        }
+
+        //size+1개 만큼 가져왔으므로 마지막꺼는 반환 안 하기 위해
+        if (hasNext) {
+            postWithImageList = postWithImageList.subList(0, size);
+        }
+
+        for (Tuple tuple : postWithImageList) {
+            Post post = tuple.get(QPost.post);
+            PostImage postImage = tuple.get(QPostImage.postImage);
+
+            Photographer photographer = post.getPhotographer();
+            PhotoProfile profile = (photographer != null) ? photographer.getPhotoProfile() : null;
+
+            Spot spot = (postImage != null) ? postImage.getSpot() : null;
+
+            dtos.add(PostListResponseDTO.of(post, profile, spot));
+        }
+
+        PostsListResponseDTO result = PostsListResponseDTO.of(dtos, hasNext);
+
+        return result;
+    }
+
 }
