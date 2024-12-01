@@ -29,10 +29,11 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 .select(post, postImage)
                 .from(post)
                 .leftJoin(post.photographer, photographer).fetchJoin()
-                .leftJoin(postImage).on(post.firstImageUrl.eq(postImage.imageUrl)).fetchJoin()
+                .leftJoin(postImage).on(post.firstImageUrl.eq(postImage.imageUrl))
                 .leftJoin(postImage.spot, spot).fetchJoin()
                 .where(
-                        eqUniv(univName), ltCursorId(cursor) //post의 univ.name가 univName인 애들, id가 cursor보다 작은 애들
+                        eqUniv(univName, post), ltCursorId(cursor, post)
+                        //post의 univ.name가 univName인 애들, id가 cursor보다 작은 애들
                 )
                 .orderBy(post.id.desc()) //id 내림차순으로 정렬(최신순)
                 .limit(size)
@@ -41,22 +42,24 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         return tuples;
     }
 
-    private BooleanExpression eqUniv(String univName) {
+    //학교필터링
+    private BooleanExpression eqUniv(String univName, QPost post) {
 
         if (univName == null) {
             return null;
         }
 
-        return QPost.post.univ.name.eq(univName);
+        return post.univ.name.eq(univName);
     }
 
-    private BooleanExpression ltCursorId(Long cursorId) {
+    //페이징
+    private BooleanExpression ltCursorId(Long cursorId, QPost post) {
 
         if (cursorId == null) { //맨 처음 요청 시, cursorId가 없을 것이므로(가장 마지막으로 조회한 게시글 id가 존재하지 않아서)
             return null;
         }
 
-        return QPost.post.id.lt(cursorId);
+        return post.id.lt(cursorId);
     }
 
 

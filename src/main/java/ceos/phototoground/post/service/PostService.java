@@ -106,18 +106,14 @@ public class PostService {
         //다음 페이지 데이터가 있는지 확인하기 위해 size+1 개 만큼 가져옴
         List<Tuple> postWithImageList = postRepository.findPostsAndImagesByUnivWithNoOffset(univ, cursor, size + 1);
 
-        List<PostListResponseDTO> dtos = new ArrayList<>();
-
-        boolean hasNext = false;
-
-        if (postWithImageList.size() > size) {
-            hasNext = true;
-        }
+        boolean hasNext = postWithImageList.size() > size;
 
         //size+1개 만큼 가져왔으므로 마지막꺼는 반환 안 하기 위해
         if (hasNext) {
             postWithImageList = postWithImageList.subList(0, size);
         }
+
+        List<PostListResponseDTO> dtos = new ArrayList<>();
 
         for (Tuple tuple : postWithImageList) {
             Post post = tuple.get(QPost.post);

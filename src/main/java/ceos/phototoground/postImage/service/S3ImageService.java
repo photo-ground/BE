@@ -5,12 +5,6 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -18,6 +12,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +48,8 @@ public class S3ImageService {
             try {
                 ObjectMetadata metadata = getObjectMetaData(file);
 
-                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, newFilename, file.getInputStream(), metadata)
+                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, newFilename, file.getInputStream(),
+                        metadata)
                         .clone().withCannedAcl(CannedAccessControlList.PublicRead);
 
                 amazonS3.putObject(putObjectRequest);
@@ -84,7 +84,13 @@ public class S3ImageService {
 
     private ObjectMetadata getObjectMetaData(MultipartFile file) {
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(file.getContentType());
+
+        System.out.println(file.getContentType());
+        int lastDotIndex = file.getOriginalFilename().lastIndexOf(".");
+        String extension = file.getOriginalFilename().substring(lastDotIndex + 1);
+
+        //contentType을 MIME 타입으로(image/jpeg, image/png,..)
+        metadata.setContentType("image/" + extension);
         metadata.setContentLength(file.getSize());
 
         return metadata;
@@ -99,8 +105,7 @@ public class S3ImageService {
             int idx = urls.indexOf(bucketUrl);
             System.out.println(idx);
 
-
-            for(int i = 0; i < urls.size(); i++) {
+            for (int i = 0; i < urls.size(); i++) {
 
                 String filenameWithUUID = urls.get(i).substring(idx + bucketUrl.length() + 2);
 
