@@ -2,6 +2,7 @@ package ceos.phototoground.photographer.controller;
 
 
 import ceos.phototoground.photographer.dto.PhotographerListDTO;
+import ceos.phototoground.photographer.dto.PhotographerSearchListDTO;
 import ceos.phototoground.photographer.service.PhotographerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,18 @@ public class PhotographerController {
         PhotographerListDTO dto = photographerService.getPhotographerList(cursor, size, univ, gender);
 
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<PhotographerSearchListDTO> searchPhotographer(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "cursor", required = false) String cursor,
+            @RequestParam(value = "size", defaultValue = "15", required = false) int size) {
+
+        PhotographerSearchListDTO dto = photographerService.searchPhotographer(name, cursor, size);
+
+        return ResponseEntity.ok(dto);
+
     }
 
 }
