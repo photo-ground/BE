@@ -28,17 +28,15 @@ public class Customer extends BaseTimeEntity {
     @NotNull
     private String password;
 
-    @NotNull
     private String phone;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @NotNull
-    private int bornYear;
+    private String role; // 역할 추가
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     private MyUniv myUniv;
+
 }
