@@ -1,6 +1,6 @@
 package ceos.phototoground.photoProfile.domain;
 
-import ceos.phototoground.global.BaseTimeEntity;
+import ceos.phototoground.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

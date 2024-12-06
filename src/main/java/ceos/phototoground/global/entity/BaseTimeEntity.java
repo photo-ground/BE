@@ -1,4 +1,4 @@
-package ceos.phototoground.global;
+package ceos.phototoground.global.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

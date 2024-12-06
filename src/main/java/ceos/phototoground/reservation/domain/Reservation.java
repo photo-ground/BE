@@ -1,7 +1,7 @@
 package ceos.phototoground.reservation.domain;
 
 import ceos.phototoground.customer.domain.Customer;
-import ceos.phototoground.global.BaseTimeEntity;
+import ceos.phototoground.global.entity.BaseTimeEntity;
 import ceos.phototoground.photographer.domain.Photographer;
 import ceos.phototoground.univ.domain.Univ;
 import jakarta.persistence.*;

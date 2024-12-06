@@ -2,6 +2,7 @@ package ceos.phototoground.global;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
+import ceos.phototoground.global.entity.BaseTimeEntity;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
