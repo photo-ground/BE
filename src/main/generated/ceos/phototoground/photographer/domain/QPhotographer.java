@@ -22,7 +22,7 @@ public class QPhotographer extends EntityPathBase<Photographer> {
 
     public static final QPhotographer photographer = new QPhotographer("photographer");
 
-    public final ceos.phototoground.global.QBaseTimeEntity _super = new ceos.phototoground.global.QBaseTimeEntity(this);
+    public final ceos.phototoground.global.entity.QBaseTimeEntity _super = new ceos.phototoground.global.entity.QBaseTimeEntity(this);
 
     public final NumberPath<Integer> bornYear = createNumber("bornYear", Integer.class);
 

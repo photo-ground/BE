@@ -19,9 +19,7 @@ public class QCustomer extends EntityPathBase<Customer> {
 
     public static final QCustomer customer = new QCustomer("customer");
 
-    public final ceos.phototoground.global.QBaseTimeEntity _super = new ceos.phototoground.global.QBaseTimeEntity(this);
-
-    public final NumberPath<Integer> bornYear = createNumber("bornYear", Integer.class);
+    public final ceos.phototoground.global.entity.QBaseTimeEntity _super = new ceos.phototoground.global.entity.QBaseTimeEntity(this);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createdAt = _super.createdAt;
@@ -37,6 +35,8 @@ public class QCustomer extends EntityPathBase<Customer> {
     public final StringPath password = createString("password");
 
     public final StringPath phone = createString("phone");
+
+    public final StringPath role = createString("role");
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
