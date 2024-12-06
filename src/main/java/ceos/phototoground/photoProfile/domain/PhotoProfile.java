@@ -1,13 +1,17 @@
 package ceos.phototoground.photoProfile.domain;
 
 import ceos.phototoground.global.BaseTimeEntity;
+import ceos.phototoground.photographer.domain.Photographer;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -49,8 +53,9 @@ public class PhotoProfile extends BaseTimeEntity {
 
     private String account; // 계좌 번호
 
-    @Column(name = "photographer_id", nullable = false)
-    private Long photographerId; // 작가 id
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "photographer_id")
+    private Photographer photographer;
 
     @OneToMany(mappedBy = "photoProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PhotoStyle> photoStyles; // 작가의 촬영 스타일
