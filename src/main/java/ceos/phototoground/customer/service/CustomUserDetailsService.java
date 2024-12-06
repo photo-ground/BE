@@ -1,9 +1,8 @@
-package ceos.phototoground.Auth.service;
+package ceos.phototoground.customer.service;
 
-import ceos.phototoground.Auth.dto.CustomUserDetails;
+import ceos.phototoground.customer.dto.CustomUserDetails;
 import ceos.phototoground.customer.domain.Customer;
 import ceos.phototoground.customer.repository.CustomerRepository;
-import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,4 +1,4 @@
-package ceos.phototoground.Auth.dto;
+package ceos.phototoground.customer.dto;
 
 import ceos.phototoground.customer.domain.Customer;
 import java.util.ArrayList;
