@@ -1,6 +1,6 @@
 package ceos.phototoground.global.jwt;
 
-import ceos.phototoground.Auth.dto.CustomUserDetails;
+import ceos.phototoground.customer.dto.CustomUserDetails;
 import ceos.phototoground.customer.domain.Customer;
 import ceos.phototoground.global.exception.CustomException;
 import ceos.phototoground.global.exception.ErrorCode;
@@ -27,6 +27,14 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws CustomException, ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        // 회원가입 경로 등 인증이 필요 없는 경로에 대해 필터를 건너뜀
+        if ("/api/customer/join".equals(path) || "/login".equals(path)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         // Authorization 헤더 확인
         String authorization = request.getHeader("Authorization");

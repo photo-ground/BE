@@ -1,6 +1,6 @@
 package ceos.phototoground.global.jwt;
 
-import ceos.phototoground.Auth.dto.CustomUserDetails;
+import ceos.phototoground.customer.dto.CustomUserDetails;
 import ceos.phototoground.global.dto.ErrorResponseDto;
 import ceos.phototoground.global.dto.SuccessResponseDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,12 +11,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
