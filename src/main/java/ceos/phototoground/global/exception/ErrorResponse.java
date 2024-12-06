@@ -13,6 +13,15 @@ public class ErrorResponse {
     private final String code;        // 에러 코드
     private final String message;     // 에러 메시지
 
+    // ErrorResponse 생성 메서드
+    public static ErrorResponse of(HttpStatus status, String code, String message) {
+        return ErrorResponse.builder()
+                            .status(status)
+                            .message(message)
+                            .code(code)
+                            .build();
+    }
+
     public static ResponseEntity<ErrorResponse> fromException(CustomException e) {
         String message = e.getErrorCode().getMessage();
         if (e.getInfo() != null) {
