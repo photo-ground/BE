@@ -36,7 +36,7 @@ public class QCustomer extends EntityPathBase<Customer> {
 
     public final StringPath phone = createString("phone");
 
-    public final StringPath role = createString("role");
+    public final EnumPath<UserRole> role = createEnum("role", UserRole.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;

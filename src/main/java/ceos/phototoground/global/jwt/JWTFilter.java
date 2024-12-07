@@ -1,5 +1,6 @@
 package ceos.phototoground.global.jwt;
 
+import ceos.phototoground.customer.domain.UserRole;
 import ceos.phototoground.customer.dto.CustomUserDetails;
 import ceos.phototoground.customer.domain.Customer;
 import ceos.phototoground.global.dto.ErrorResponseDto;
@@ -69,7 +70,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             // 토큰에서 username과 role 획득
             String email = jwtUtil.getUsername(token);
-            String role = jwtUtil.getRole(token);
+            UserRole role = UserRole.fromAuthority(jwtUtil.getRole(token));
 
             // 회원 생성
             Customer customer = Customer.builder()
@@ -121,6 +122,4 @@ public class JWTFilter extends OncePerRequestFilter {
         response.setContentType("application/json; charset=UTF-8"); // UTF-8 설정
         response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse)); // JSON 응답 작성
     }
-
-
 }

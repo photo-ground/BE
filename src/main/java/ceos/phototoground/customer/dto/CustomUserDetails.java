@@ -21,7 +21,7 @@ public class CustomUserDetails implements UserDetails {
             @Override
             public String getAuthority() {
 
-                return customer.getRole();
+                return customer.getRole().getAuthority();
             }
         });
 

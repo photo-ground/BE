@@ -35,7 +35,8 @@ public class Customer extends BaseTimeEntity {
     private Gender gender;
 
     @NotNull
-    private String role; // 역할 추가
+    @Enumerated(EnumType.STRING)
+    private UserRole role; // 역할 추가
 
     @Enumerated(EnumType.STRING)
     private MyUniv myUniv;

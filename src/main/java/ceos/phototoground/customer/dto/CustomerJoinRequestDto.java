@@ -1,6 +1,7 @@
 package ceos.phototoground.customer.dto;
 
 import ceos.phototoground.customer.domain.Customer;
+import ceos.phototoground.customer.domain.UserRole;
 import ceos.phototoground.global.exception.CustomException;
 import ceos.phototoground.global.exception.ErrorCode;
 import ceos.phototoground.photographer.domain.Gender;
@@ -38,7 +39,7 @@ public class CustomerJoinRequestDto {
     private MyUniv myUniv;
 
     // DTO -> Entity 변환
-    public Customer toEntity(String encryptedPassword, String role) {
+    public Customer toEntity(String encryptedPassword, UserRole role) {
         return Customer.builder()
                        .email(this.email)
                        .password(encryptedPassword) // 암호화된 비밀번호 전달
