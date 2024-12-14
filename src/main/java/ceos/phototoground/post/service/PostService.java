@@ -22,6 +22,7 @@ import ceos.phototoground.spot.service.SpotService;
 import ceos.phototoground.univ.domain.Univ;
 import ceos.phototoground.univ.service.UnivService;
 import com.querydsl.core.Tuple;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -151,5 +152,13 @@ public class PostService {
 
         return ProfilePostResponseListDTO.of(hasNext, postList);
 
+    }
+
+    // 한달 이내 작성된 게시글 리스트 가져오기
+    public List<Post> getRecentPosts() {
+
+        LocalDateTime aMonthAgo = LocalDateTime.now().minusMonths(1);
+
+        return postRepository.findByCreatedAtAfter(aMonthAgo);
     }
 }

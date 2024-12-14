@@ -4,8 +4,10 @@ package ceos.phototoground.photographer.controller;
 import ceos.phototoground.photographer.dto.PhotographerBottomDTO;
 import ceos.phototoground.photographer.dto.PhotographerIntroDTO;
 import ceos.phototoground.photographer.dto.PhotographerListDTO;
+import ceos.phototoground.photographer.dto.PhotographerResponseDTO;
 import ceos.phototoground.photographer.dto.PhotographerSearchListDTO;
 import ceos.phototoground.photographer.service.PhotographerService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,10 +62,21 @@ public class PhotographerController {
     @GetMapping("/{photographerId}/bottom")
     public ResponseEntity<PhotographerBottomDTO> getPhotographerBottom(@PathVariable Long photographerId,
                                                                        @RequestParam(value = "cursor", required = false) Long cursor,
-                                                                       @RequestParam(value = "size", defaultValue = "5", required = false) int size) {
+                                                                       @RequestParam(value = "size", defaultValue = "15", required = false) int size) {
 
         PhotographerBottomDTO dto = photographerService.getPhotographerBottom(photographerId, cursor, size);
 
         return ResponseEntity.ok(dto);
+    }
+
+    // 활발히 활동중인 작가 조회
+    @GetMapping("/active")
+    public ResponseEntity<PhotographerListDTO> getActivePhotographer() {
+
+        List<PhotographerResponseDTO> dtos = photographerService.getActivePhotographer();
+
+        PhotographerListDTO photographerListDTO = PhotographerListDTO.of(dtos, false);
+
+        return ResponseEntity.ok(photographerListDTO);
     }
 }

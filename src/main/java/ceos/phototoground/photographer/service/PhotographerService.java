@@ -12,13 +12,16 @@ import ceos.phototoground.photographer.dto.PhotographerListDTO;
 import ceos.phototoground.photographer.dto.PhotographerResponseDTO;
 import ceos.phototoground.photographer.dto.PhotographerSearchListDTO;
 import ceos.phototoground.photographer.repository.PhotographerRepository;
+import ceos.phototoground.post.domain.Post;
 import ceos.phototoground.post.dto.ProfilePostResponseListDTO;
 import ceos.phototoground.post.service.PostService;
 import ceos.phototoground.univ.domain.PhotographerUniv;
 import ceos.phototoground.univ.service.PhotographerUnivService;
 import com.querydsl.core.Tuple;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,5 +124,39 @@ public class PhotographerService {
         ProfilePostResponseListDTO postList = postService.findProfilePostWithNoOffset(photographerId, cursor, size);
 
         return PhotographerBottomDTO.of(photoProfile.getIntroduction(), photoProfile.getScore(), styleList, postList);
+    }
+
+    // 활발히 활동하는 작가 리스트 져오기
+    // 최근 한달이내 작성된 게시글만 모두 가져온 후 각 작가 id를 map에 저장 -> value 가장 큰 작가 8명 가져오기
+    public List<PhotographerResponseDTO> getActivePhotographer() {
+
+        // 최근 한달이내 작성된 게시글만 모두 가져오기
+        List<Post> posts = postService.getRecentPosts();
+
+        Map<Long, Long> map = new HashMap<>();
+
+        // 각 작가 id를 map에 저장
+        posts.stream()
+                .map(post -> post.getPhotographer().getId())
+                .forEach(photographerId -> map.put(photographerId, map.getOrDefault(photographerId, 0L) + 1L));
+
+        // 가장 개수 많은 작가 8명 가져오기
+        List<Long> photographerIds = map.entrySet().stream()
+                .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
+                .limit(8) // 8명
+                .map(Map.Entry::getKey)
+                .toList();
+
+        List<PhotographerResponseDTO> dtos = photographerIds.stream()
+                .map(id -> {
+                    Photographer photographer = photographerRepository.findById(id)
+                            .orElseThrow(() -> new IllegalArgumentException("해당 id의 작가는 존재하지 않습니다."));
+                    PhotoProfile photoProfile = photographer.getPhotoProfile();
+
+                    return PhotographerResponseDTO.of(photographer, photoProfile);
+                })
+                .toList();
+
+        return dtos;
     }
 }
