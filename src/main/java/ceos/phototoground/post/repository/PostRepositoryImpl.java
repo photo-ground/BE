@@ -1,6 +1,7 @@
 package ceos.phototoground.post.repository;
 
 import ceos.phototoground.photographer.domain.QPhotographer;
+import ceos.phototoground.post.domain.Post;
 import ceos.phototoground.post.domain.QPost;
 import ceos.phototoground.postImage.domain.QPostImage;
 import ceos.phototoground.spot.domain.QSpot;
@@ -42,6 +43,26 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         return tuples;
     }
 
+
+    // 작가 프로필 하단부 조회
+    @Override
+    public List<Post> findProfilePostWithNoOffset(Long photographerId, Long cursor, int size) {
+
+        QPost post = QPost.post;
+
+        List<Post> posts = jpaQueryFactory
+                .selectFrom(post)
+                .where(
+                        eqPhotographer(photographerId, post), ltCursorId(cursor, post)
+                )
+                .orderBy(post.id.desc())
+                .limit(size)
+                .fetch();
+
+        return posts;
+    }
+
+
     //학교필터링
     private BooleanExpression eqUniv(String univName, QPost post) {
 
@@ -49,7 +70,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
             return null;
         }
 
-        return post.univ.name.eq(univName);
+        return QPost.post.univ.name.eq(univName);
     }
 
     //페이징
@@ -60,6 +81,16 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         }
 
         return post.id.lt(cursorId);
+    }
+
+    //작가필터링
+    private BooleanExpression eqPhotographer(Long photographerId, QPost post) {
+        if (photographerId == null) {
+
+            return null;
+        }
+
+        return post.photographer.id.eq(photographerId);
     }
 
 

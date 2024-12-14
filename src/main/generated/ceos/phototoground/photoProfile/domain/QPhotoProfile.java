@@ -51,6 +51,8 @@ public class QPhotoProfile extends EntityPathBase<PhotoProfile> {
 
     public final StringPath profileUrl = createString("profileUrl");
 
+    public final NumberPath<Long> score = createNumber("score", Long.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
