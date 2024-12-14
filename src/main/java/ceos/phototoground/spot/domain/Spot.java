@@ -1,6 +1,6 @@
 package ceos.phototoground.spot.domain;
 
-import ceos.phototoground.global.BaseTimeEntity;
+import ceos.phototoground.global.entity.BaseTimeEntity;
 import ceos.phototoground.univ.domain.Univ;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

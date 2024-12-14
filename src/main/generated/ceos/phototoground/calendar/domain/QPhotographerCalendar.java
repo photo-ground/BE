@@ -22,7 +22,7 @@ public class QPhotographerCalendar extends EntityPathBase<PhotographerCalendar> 
 
     public static final QPhotographerCalendar photographerCalendar = new QPhotographerCalendar("photographerCalendar");
 
-    public final ceos.phototoground.global.QBaseTimeEntity _super = new ceos.phototoground.global.QBaseTimeEntity(this);
+    public final ceos.phototoground.global.entity.QBaseTimeEntity _super = new ceos.phototoground.global.entity.QBaseTimeEntity(this);
 
     public final QCalendar calendar;
 

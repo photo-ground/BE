@@ -22,7 +22,7 @@ public class QPhotoProfile extends EntityPathBase<PhotoProfile> {
 
     public static final QPhotoProfile photoProfile = new QPhotoProfile("photoProfile");
 
-    public final ceos.phototoground.global.QBaseTimeEntity _super = new ceos.phototoground.global.QBaseTimeEntity(this);
+    public final ceos.phototoground.global.entity.QBaseTimeEntity _super = new ceos.phototoground.global.entity.QBaseTimeEntity(this);
 
     public final StringPath account = createString("account");
 
