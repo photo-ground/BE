@@ -3,13 +3,17 @@ package ceos.phototoground.photographer.service;
 import ceos.phototoground.photoProfile.domain.PhotoProfile;
 import ceos.phototoground.photoProfile.domain.QPhotoProfile;
 import ceos.phototoground.photoProfile.service.PhotoProfileService;
+import ceos.phototoground.photoProfile.service.PhotoStyleService;
 import ceos.phototoground.photographer.domain.Photographer;
 import ceos.phototoground.photographer.domain.QPhotographer;
+import ceos.phototoground.photographer.dto.PhotographerBottomDTO;
 import ceos.phototoground.photographer.dto.PhotographerIntroDTO;
 import ceos.phototoground.photographer.dto.PhotographerListDTO;
 import ceos.phototoground.photographer.dto.PhotographerResponseDTO;
 import ceos.phototoground.photographer.dto.PhotographerSearchListDTO;
 import ceos.phototoground.photographer.repository.PhotographerRepository;
+import ceos.phototoground.post.dto.ProfilePostResponseListDTO;
+import ceos.phototoground.post.service.PostService;
 import ceos.phototoground.univ.domain.PhotographerUniv;
 import ceos.phototoground.univ.service.PhotographerUnivService;
 import com.querydsl.core.Tuple;
@@ -27,6 +31,8 @@ public class PhotographerService {
     private final PhotographerRepository photographerRepository;
     private final PhotoProfileService photoProfileService;
     private final PhotographerUnivService photographerUnivService;
+    private final PhotoStyleService photoStyleService;
+    private final PostService postService;
 
     @Transactional
     public Photographer findPhotographerById(Long photographerId) {
@@ -101,5 +107,19 @@ public class PhotographerService {
                 .toList();
 
         return PhotographerIntroDTO.of(photographer, photoProfile, univNameList);
+    }
+
+    public PhotographerBottomDTO getPhotographerBottom(Long photographerId, Long cursor, int size) {
+
+        Photographer photographer = photographerRepository.findById(photographerId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 작가가 존재하지 않습니다."));
+
+        PhotoProfile photoProfile = photographer.getPhotoProfile();
+
+        List<String> styleList = photoStyleService.findByPhotoProfile(photoProfile);
+
+        ProfilePostResponseListDTO postList = postService.findProfilePostWithNoOffset(photographerId, cursor, size);
+
+        return PhotographerBottomDTO.of(photoProfile.getIntroduction(), photoProfile.getScore(), styleList, postList);
     }
 }

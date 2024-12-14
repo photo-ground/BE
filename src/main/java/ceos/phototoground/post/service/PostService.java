@@ -3,13 +3,15 @@ package ceos.phototoground.post.service;
 import ceos.phototoground.photoProfile.domain.PhotoProfile;
 import ceos.phototoground.photoProfile.service.PhotoProfileService;
 import ceos.phototoground.photographer.domain.Photographer;
-import ceos.phototoground.photographer.service.PhotographerService;
+import ceos.phototoground.photographer.repository.PhotographerRepository;
 import ceos.phototoground.post.domain.Post;
 import ceos.phototoground.post.domain.QPost;
 import ceos.phototoground.post.dto.PostListResponseDTO;
 import ceos.phototoground.post.dto.PostRequestDTO;
 import ceos.phototoground.post.dto.PostResponseDTO;
 import ceos.phototoground.post.dto.PostsListResponseDTO;
+import ceos.phototoground.post.dto.ProfilePostResponseDTO;
+import ceos.phototoground.post.dto.ProfilePostResponseListDTO;
 import ceos.phototoground.post.repository.PostRepository;
 import ceos.phototoground.postImage.domain.PostImage;
 import ceos.phototoground.postImage.domain.QPostImage;
@@ -33,9 +35,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final PhotographerService photographerService;
     private final UnivService univService;
     private final PostImageService postImageService;
+    private final PhotographerRepository photographerRepository;
 
     private final PhotoProfileService photoProfileService;
     private final SpotService spotService;
@@ -43,7 +45,8 @@ public class PostService {
     @Transactional
     public void createPost(PostRequestDTO dto, List<MultipartFile> photos, Long photographerId) {
 
-        Photographer photographer = photographerService.findPhotographerById(photographerId);
+        Photographer photographer = photographerRepository.findById(photographerId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 작가가 존재하지 않습니다."));
         Univ univ = univService.findUnivById(dto.getUnivId());
 
         //firstImageUrl 안 넣은 상태 -> photos를 s3에 올리고나서 url 반환받은 후에 post 필드에 매핑해주기
@@ -132,4 +135,21 @@ public class PostService {
         return result;
     }
 
+    public ProfilePostResponseListDTO findProfilePostWithNoOffset(Long photographerId, Long cursor, int size) {
+
+        List<Post> profilePosts = postRepository.findProfilePostWithNoOffset(photographerId, cursor, size + 1);
+
+        boolean hasNext = profilePosts.size() > size;
+
+        //size+1개 만큼 가져왔으므로 마지막꺼는 반환 안 하기 위해
+        if (hasNext) {
+            profilePosts = profilePosts.subList(0, size);
+        }
+
+        List<ProfilePostResponseDTO> postList = profilePosts.stream()
+                .map(post -> new ProfilePostResponseDTO(post.getId(), post.getFirstImageUrl())).toList();
+
+        return ProfilePostResponseListDTO.of(hasNext, postList);
+
+    }
 }

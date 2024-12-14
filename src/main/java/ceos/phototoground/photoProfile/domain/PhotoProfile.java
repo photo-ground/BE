@@ -53,6 +53,8 @@ public class PhotoProfile extends BaseTimeEntity {
 
     private String account; // 계좌 번호
 
+    private Long score; // 별점
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "photographer_id")
     private Photographer photographer;

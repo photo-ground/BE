@@ -1,6 +1,7 @@
 package ceos.phototoground.photographer.controller;
 
 
+import ceos.phototoground.photographer.dto.PhotographerBottomDTO;
 import ceos.phototoground.photographer.dto.PhotographerIntroDTO;
 import ceos.phototoground.photographer.dto.PhotographerListDTO;
 import ceos.phototoground.photographer.dto.PhotographerSearchListDTO;
@@ -57,7 +58,12 @@ public class PhotographerController {
 
     // 특정 작가 하단부 조회
     @GetMapping("/{photographerId}/bottom")
-    public ResponseEntity<PhotographerBottomDTO> getPhotographerBottom(@PathVariable Long photographerId) {
+    public ResponseEntity<PhotographerBottomDTO> getPhotographerBottom(@PathVariable Long photographerId,
+                                                                       @RequestParam(value = "cursor", required = false) Long cursor,
+                                                                       @RequestParam(value = "size", defaultValue = "5", required = false) int size) {
 
+        PhotographerBottomDTO dto = photographerService.getPhotographerBottom(photographerId, cursor, size);
+
+        return ResponseEntity.ok(dto);
     }
 }
