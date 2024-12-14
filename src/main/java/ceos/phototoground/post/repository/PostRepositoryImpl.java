@@ -70,7 +70,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
             return null;
         }
 
-        return post.univ.name.eq(univName);
+        return QPost.post.univ.name.eq(univName);
     }
 
     //페이징

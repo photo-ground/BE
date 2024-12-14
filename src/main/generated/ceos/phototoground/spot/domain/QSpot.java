@@ -22,7 +22,7 @@ public class QSpot extends EntityPathBase<Spot> {
 
     public static final QSpot spot = new QSpot("spot");
 
-    public final ceos.phototoground.global.QBaseTimeEntity _super = new ceos.phototoground.global.QBaseTimeEntity(this);
+    public final ceos.phototoground.global.entity.QBaseTimeEntity _super = new ceos.phototoground.global.entity.QBaseTimeEntity(this);
 
     public final StringPath content = createString("content");
 
