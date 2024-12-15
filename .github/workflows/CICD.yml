@@ -77,7 +77,13 @@ jobs:
           script: |
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/photoground_server:latest
             sudo docker-compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
-      
+
+      - name: Debug environment variables
+        run: |
+          echo "CURRENT_PORT=${{env.CURRENT_PORT}}"
+          echo "STOPPED_PORT=${{env.STOPPED_PORT}}"
+          echo "TARGET_UPSTREAM=${{env.TARGET_UPSTREAM}}"
+    
       - name: Check deploy server URL   #스프링부트 서버가 완전히 켜져야 nginx가 blue->green으로 바꿔줌. 따라서 green이 정상적으로 돌아가는지 health check필요
         uses: jtalk/url-health-check-action@v3
         with:
