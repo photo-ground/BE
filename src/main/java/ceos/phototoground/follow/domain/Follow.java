@@ -1,7 +1,7 @@
 package ceos.phototoground.follow.domain;
 
 import ceos.phototoground.customer.domain.Customer;
-import ceos.phototoground.global.BaseTimeEntity;
+import ceos.phototoground.global.entity.BaseTimeEntity;
 import ceos.phototoground.photographer.domain.Photographer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

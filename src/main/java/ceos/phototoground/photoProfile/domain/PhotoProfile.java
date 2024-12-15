@@ -1,6 +1,6 @@
 package ceos.phototoground.photoProfile.domain;
 
-import ceos.phototoground.global.BaseTimeEntity;
+import ceos.phototoground.global.entity.BaseTimeEntity;
 import ceos.phototoground.photographer.domain.Photographer;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -52,6 +52,8 @@ public class PhotoProfile extends BaseTimeEntity {
     private String bank; // 은행명
 
     private String account; // 계좌 번호
+
+    private Long score; // 별점
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "photographer_id")

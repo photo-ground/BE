@@ -1,7 +1,7 @@
 package ceos.phototoground.review.domain;
 
 import ceos.phototoground.customer.domain.Customer;
-import ceos.phototoground.global.BaseTimeEntity;
+import ceos.phototoground.global.entity.BaseTimeEntity;
 import ceos.phototoground.reservation.domain.Reservation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

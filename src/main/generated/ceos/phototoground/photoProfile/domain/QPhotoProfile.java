@@ -22,7 +22,7 @@ public class QPhotoProfile extends EntityPathBase<PhotoProfile> {
 
     public static final QPhotoProfile photoProfile = new QPhotoProfile("photoProfile");
 
-    public final ceos.phototoground.global.QBaseTimeEntity _super = new ceos.phototoground.global.QBaseTimeEntity(this);
+    public final ceos.phototoground.global.entity.QBaseTimeEntity _super = new ceos.phototoground.global.entity.QBaseTimeEntity(this);
 
     public final StringPath account = createString("account");
 
@@ -50,6 +50,8 @@ public class QPhotoProfile extends EntityPathBase<PhotoProfile> {
     public final NumberPath<Long> price = createNumber("price", Long.class);
 
     public final StringPath profileUrl = createString("profileUrl");
+
+    public final NumberPath<Long> score = createNumber("score", Long.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;

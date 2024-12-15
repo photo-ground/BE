@@ -3,13 +3,15 @@ package ceos.phototoground.post.service;
 import ceos.phototoground.photoProfile.domain.PhotoProfile;
 import ceos.phototoground.photoProfile.service.PhotoProfileService;
 import ceos.phototoground.photographer.domain.Photographer;
-import ceos.phototoground.photographer.service.PhotographerService;
+import ceos.phototoground.photographer.repository.PhotographerRepository;
 import ceos.phototoground.post.domain.Post;
 import ceos.phototoground.post.domain.QPost;
 import ceos.phototoground.post.dto.PostListResponseDTO;
 import ceos.phototoground.post.dto.PostRequestDTO;
 import ceos.phototoground.post.dto.PostResponseDTO;
 import ceos.phototoground.post.dto.PostsListResponseDTO;
+import ceos.phototoground.post.dto.ProfilePostResponseDTO;
+import ceos.phototoground.post.dto.ProfilePostResponseListDTO;
 import ceos.phototoground.post.repository.PostRepository;
 import ceos.phototoground.postImage.domain.PostImage;
 import ceos.phototoground.postImage.domain.QPostImage;
@@ -20,6 +22,7 @@ import ceos.phototoground.spot.service.SpotService;
 import ceos.phototoground.univ.domain.Univ;
 import ceos.phototoground.univ.service.UnivService;
 import com.querydsl.core.Tuple;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +36,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final PhotographerService photographerService;
     private final UnivService univService;
     private final PostImageService postImageService;
+    private final PhotographerRepository photographerRepository;
 
     private final PhotoProfileService photoProfileService;
     private final SpotService spotService;
@@ -43,7 +46,8 @@ public class PostService {
     @Transactional
     public void createPost(PostRequestDTO dto, List<MultipartFile> photos, Long photographerId) {
 
-        Photographer photographer = photographerService.findPhotographerById(photographerId);
+        Photographer photographer = photographerRepository.findById(photographerId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 작가가 존재하지 않습니다."));
         Univ univ = univService.findUnivById(dto.getUnivId());
 
         //firstImageUrl 안 넣은 상태 -> photos를 s3에 올리고나서 url 반환받은 후에 post 필드에 매핑해주기
@@ -106,18 +110,14 @@ public class PostService {
         //다음 페이지 데이터가 있는지 확인하기 위해 size+1 개 만큼 가져옴
         List<Tuple> postWithImageList = postRepository.findPostsAndImagesByUnivWithNoOffset(univ, cursor, size + 1);
 
-        List<PostListResponseDTO> dtos = new ArrayList<>();
-
-        boolean hasNext = false;
-
-        if (postWithImageList.size() > size) {
-            hasNext = true;
-        }
+        boolean hasNext = postWithImageList.size() > size;
 
         //size+1개 만큼 가져왔으므로 마지막꺼는 반환 안 하기 위해
         if (hasNext) {
             postWithImageList = postWithImageList.subList(0, size);
         }
+
+        List<PostListResponseDTO> dtos = new ArrayList<>();
 
         for (Tuple tuple : postWithImageList) {
             Post post = tuple.get(QPost.post);
@@ -136,4 +136,29 @@ public class PostService {
         return result;
     }
 
+    public ProfilePostResponseListDTO findProfilePostWithNoOffset(Long photographerId, Long cursor, int size) {
+
+        List<Post> profilePosts = postRepository.findProfilePostWithNoOffset(photographerId, cursor, size + 1);
+
+        boolean hasNext = profilePosts.size() > size;
+
+        //size+1개 만큼 가져왔으므로 마지막꺼는 반환 안 하기 위해
+        if (hasNext) {
+            profilePosts = profilePosts.subList(0, size);
+        }
+
+        List<ProfilePostResponseDTO> postList = profilePosts.stream()
+                .map(post -> new ProfilePostResponseDTO(post.getId(), post.getFirstImageUrl())).toList();
+
+        return ProfilePostResponseListDTO.of(hasNext, postList);
+
+    }
+
+    // 한달 이내 작성된 게시글 리스트 가져오기
+    public List<Post> getRecentPosts() {
+
+        LocalDateTime aMonthAgo = LocalDateTime.now().minusMonths(1);
+
+        return postRepository.findByCreatedAtAfter(aMonthAgo);
+    }
 }
