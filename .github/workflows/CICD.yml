@@ -56,7 +56,7 @@ jobs:
           else
             CURRENT_UPSTREAM=green
           fi
-          echo CURRENT_UPSTREAM=$CURRENT_UPSTREAM >> $GITHUB_ENV  #githubactions에 담은 전역변수
+          echo CURRENT_UPSTREAM=$CURRENT_UPSTREAM >> $GITHUB_ENV  
           if [ $CURRENT_UPSTREAM = blue ]; then
             echo "CURRENT_PORT=8080" >> $GITHUB_ENV
             echo "STOPPED_PORT=8081" >> $GITHUB_ENV
