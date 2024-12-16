@@ -37,6 +37,8 @@ public class QSpot extends EntityPathBase<Spot> {
 
     public final StringPath name = createString("name");
 
+    public final StringPath spotImageUrl = createString("spotImageUrl");
+
     public final ceos.phototoground.univ.domain.QUniv univ;
 
     //inherited
