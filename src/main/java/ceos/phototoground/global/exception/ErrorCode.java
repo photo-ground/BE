@@ -27,7 +27,19 @@ public enum ErrorCode {
     UNIV_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이름의 대학교는 존재하지 않습니다."),
 
     //Spot
-    SPOT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 스팟은 존재하지 않습니다.");
+    SPOT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 스팟은 존재하지 않습니다."),
+
+    //PhotoProfile
+    PROFILE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 작가 id의 프로필은 존재하지 않습니다."),
+
+    //Schedule
+    SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 작가 id의 스케줄은 존재하지 않습니다."),
+
+    //PhotographerCalendar
+    PHOTOGRAPHER_CALENDAR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 작가 id의 작가캘린더는 존재하지 않습니다."),
+
+    //Calendar
+    CALENDAR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 캘린더는 존재하지 않습니다.");
 
     private final HttpStatus status;
     private final String message;
