@@ -6,6 +6,7 @@ import ceos.phototoground.postImage.dto.PostImageResponseDTO;
 import ceos.phototoground.postImage.repository.PostImageRepository;
 import ceos.phototoground.spot.domain.Spot;
 import ceos.phototoground.spot.service.SpotService;
+import com.querydsl.core.Tuple;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -107,5 +108,10 @@ public class PostImageService {
     public PostImage findImageByImageUrl(String firstImageUrl) {
 
         return postImageRepository.findByImageUrl(firstImageUrl);
+    }
+
+    public List<Tuple> findBySpot_Id(Long spotId, Long cursor, int size) {
+
+        return postImageRepository.findBySpot_Id(spotId, cursor, size);
     }
 }
