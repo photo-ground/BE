@@ -5,11 +5,14 @@ import ceos.phototoground.calendar.service.CalendarService;
 import ceos.phototoground.calendar.service.PhotographerCalendarService;
 import ceos.phototoground.customer.domain.Customer;
 import ceos.phototoground.customer.service.CustomerService;
+import ceos.phototoground.global.exception.CustomException;
+import ceos.phototoground.global.exception.ErrorCode;
 import ceos.phototoground.photoProfile.domain.PhotoProfile;
 import ceos.phototoground.photoProfile.service.PhotoProfileService;
 import ceos.phototoground.photographer.domain.Photographer;
 import ceos.phototoground.photographer.service.PhotographerService;
 import ceos.phototoground.reservation.domain.Reservation;
+import ceos.phototoground.reservation.domain.Status;
 import ceos.phototoground.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.reservation.dto.RequestReservationDTO;
 import ceos.phototoground.reservation.repository.ReservationRepository;
@@ -73,5 +76,15 @@ public class ReservationService {
         Reservation reservation = Reservation.createReservation(customer, photographer, univ, requestReservationDTO);
 
         reservationRepository.save(reservation);
+    }
+
+    //예약취소
+    @Transactional
+    public void cancelReservation(Long reservationId) {
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+        reservation.changeStatus(Status.CANCELED);
+        
     }
 }

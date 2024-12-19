@@ -45,7 +45,10 @@ public enum ErrorCode {
     PHOTOGRAPHER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 사진작가는 존재하지 않습니다."),
 
     //Customer
-    CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 고객은 존재하지 않습니다.");
+    CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 고객은 존재하지 않습니다."),
+
+    //Reservation
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 예약은 존재하지 않습니다.");
 
     private final HttpStatus status;
     private final String message;

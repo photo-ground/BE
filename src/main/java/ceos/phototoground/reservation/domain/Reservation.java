@@ -91,4 +91,8 @@ public class Reservation extends BaseTimeEntity {
                 .univ(univ)
                 .build();
     }
+
+    public void changeStatus(Status status) {
+        this.status = status;
+    }
 }
