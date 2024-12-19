@@ -1,5 +1,7 @@
 package ceos.phototoground.photographer.service;
 
+import ceos.phototoground.global.exception.CustomException;
+import ceos.phototoground.global.exception.ErrorCode;
 import ceos.phototoground.photoProfile.domain.PhotoProfile;
 import ceos.phototoground.photoProfile.domain.QPhotoProfile;
 import ceos.phototoground.photoProfile.service.PhotoProfileService;
@@ -158,5 +160,10 @@ public class PhotographerService {
                 .toList();
 
         return dtos;
+    }
+
+    public Photographer findById(Long photographerId) {
+        return photographerRepository.findById(photographerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PHOTOGRAPHER_NOT_FOUND));
     }
 }

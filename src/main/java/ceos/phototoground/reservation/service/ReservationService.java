@@ -3,14 +3,21 @@ package ceos.phototoground.reservation.service;
 import ceos.phototoground.calendar.domain.PhotographerCalendar;
 import ceos.phototoground.calendar.service.CalendarService;
 import ceos.phototoground.calendar.service.PhotographerCalendarService;
+import ceos.phototoground.customer.domain.Customer;
+import ceos.phototoground.customer.service.CustomerService;
 import ceos.phototoground.photoProfile.domain.PhotoProfile;
 import ceos.phototoground.photoProfile.service.PhotoProfileService;
+import ceos.phototoground.photographer.domain.Photographer;
+import ceos.phototoground.photographer.service.PhotographerService;
+import ceos.phototoground.reservation.domain.Reservation;
 import ceos.phototoground.reservation.dto.PhotographerReservationInfo;
+import ceos.phototoground.reservation.dto.RequestReservationDTO;
 import ceos.phototoground.reservation.repository.ReservationRepository;
 import ceos.phototoground.schedule.domain.Schedule;
 import ceos.phototoground.schedule.dto.WeekDaySchedule;
 import ceos.phototoground.schedule.service.ScheduleService;
 import ceos.phototoground.univ.domain.PhotographerUniv;
+import ceos.phototoground.univ.domain.Univ;
 import ceos.phototoground.univ.service.PhotographerUnivService;
 import ceos.phototoground.univ.service.UnivService;
 import java.util.List;
@@ -30,6 +37,8 @@ public class ReservationService {
     private final PhotographerCalendarService photographerCalendarService;
     private final PhotographerUnivService photographerUnivService;
     private final UnivService univService;
+    private final PhotographerService photographerService;
+    private final CustomerService customerService;
 
     // 예약신청 페이지 조회
     public PhotographerReservationInfo getPhotographerReservationInfo(Long photographerId) {
@@ -51,5 +60,18 @@ public class ReservationService {
         List<WeekDaySchedule> weekDaySchedule = scheduleService.getWeekDaySchedules(schedule);
 
         return PhotographerReservationInfo.of(profile, weekDaySchedule, availDates, univName);
+    }
+
+    //예약신청
+    @Transactional
+    public void createReservation(RequestReservationDTO requestReservationDTO, Long photographerId, Long customerId) {
+
+        Customer customer = customerService.findById(customerId);
+        Photographer photographer = photographerService.findById(photographerId);
+        Univ univ = univService.findByName(requestReservationDTO.getUnivName());
+
+        Reservation reservation = Reservation.createReservation(customer, photographer, univ, requestReservationDTO);
+
+        reservationRepository.save(reservation);
     }
 }

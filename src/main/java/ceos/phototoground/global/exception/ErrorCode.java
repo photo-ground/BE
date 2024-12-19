@@ -39,7 +39,13 @@ public enum ErrorCode {
     PHOTOGRAPHER_CALENDAR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 작가 id의 작가캘린더는 존재하지 않습니다."),
 
     //Calendar
-    CALENDAR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 캘린더는 존재하지 않습니다.");
+    CALENDAR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 캘린더는 존재하지 않습니다."),
+
+    //Photographer
+    PHOTOGRAPHER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 사진작가는 존재하지 않습니다."),
+
+    //Customer
+    CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 고객은 존재하지 않습니다.");
 
     private final HttpStatus status;
     private final String message;
