@@ -2,6 +2,7 @@ package ceos.phototoground.reservation.controller;
 
 import ceos.phototoground.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.reservation.dto.RequestReservationDTO;
+import ceos.phototoground.reservation.dto.ReservationInfoResponse;
 import ceos.phototoground.reservation.service.ReservationService;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,13 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/reservation")
+@RequestMapping("/api")
 public class ReservationController {
 
     private final ReservationService reservationService;
 
     // 예약신청 페이지 조회
-    @GetMapping("/{photographerId}")
+    @GetMapping("/photographer/{photographerId}/reservation")
     public ResponseEntity<PhotographerReservationInfo> getPhotographerReservationInfo(
             @PathVariable("photographerId") Long photographerId) {
 
@@ -32,7 +33,7 @@ public class ReservationController {
     }
 
     // 예약신청  (로그인 완성된 후 @AuthenticationPrincipal로 수정하기)
-    @PostMapping("/{photographerId}/{customerId}")
+    @PostMapping("/reservation/{photographerId}/{customerId}")
     public ResponseEntity<Map<String, String>> createReservation(@PathVariable("photographerId") Long photographerId,
                                                                  @RequestBody
                                                                  RequestReservationDTO requestReservationDTO,
@@ -47,7 +48,7 @@ public class ReservationController {
     }
 
     // 예약 취소
-    @PatchMapping("/{reservationId}/cancel")
+    @PatchMapping("/reservation/{reservationId}/cancel")
     public ResponseEntity<Map<String, String>> cancelReservation(@PathVariable("reservationId") Long reservationId) {
 
         reservationService.cancelReservation(reservationId);
@@ -55,5 +56,14 @@ public class ReservationController {
         Map<String, String> response = new HashMap<>();
         response.put("message", "예약 취소가 완료되었습니다.");
         return ResponseEntity.ok(response);
+    }
+
+    // 예약 상세조회
+    @GetMapping("/reservation/{reservationId}")
+    public ResponseEntity<ReservationInfoResponse> getOneReservationDetail(
+            @PathVariable("reservationId") Long reservationId) {
+
+        ReservationInfoResponse dto = reservationService.getOneReservationDetail(reservationId);
+        return ResponseEntity.ok(dto);
     }
 }

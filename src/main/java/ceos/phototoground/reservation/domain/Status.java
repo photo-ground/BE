@@ -14,4 +14,9 @@ public enum Status {
     COMPLETED("촬영완료");
 
     private final String name; //한국어 이름
+
+    // 영어 enum값을 한글로 반환
+    public String getName() {
+        return name;
+    }
 }

@@ -15,6 +15,7 @@ import ceos.phototoground.reservation.domain.Reservation;
 import ceos.phototoground.reservation.domain.Status;
 import ceos.phototoground.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.reservation.dto.RequestReservationDTO;
+import ceos.phototoground.reservation.dto.ReservationInfoResponse;
 import ceos.phototoground.reservation.repository.ReservationRepository;
 import ceos.phototoground.schedule.domain.Schedule;
 import ceos.phototoground.schedule.dto.WeekDaySchedule;
@@ -85,6 +86,17 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
         reservation.changeStatus(Status.CANCELED);
-        
+
+    }
+
+    //예약상세 조회
+    public ReservationInfoResponse getOneReservationDetail(Long reservationId) {
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        PhotoProfile profile = photoProfileService.findByPhotographer_Id(reservation.getPhotographer().getId());
+
+        return ReservationInfoResponse.of(reservation, profile);
     }
 }
