@@ -3,12 +3,16 @@ package ceos.phototoground.global.jwt;
 import ceos.phototoground.customer.dto.CustomUserDetails;
 import ceos.phototoground.global.dto.ErrorResponseDto;
 import ceos.phototoground.global.dto.SuccessResponseDto;
+import ceos.phototoground.global.entity.RefreshEntity;
+import ceos.phototoground.global.entity.RefreshRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +28,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final RefreshRepository refreshRepository;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -44,36 +49,32 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication authentication) throws IOException {
-        // Spring Security의 인증 객체에서 사용자 정보를 가져옴
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        String email = customUserDetails.getUsername();
-
-        // 인증된 사용자의 권한 목록을 가져옴
+        // 인증된 사용자 정보 가져오기
+        String username = authentication.getName(); //username 대신 email 사용중
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        String role = authorities.iterator().next().getAuthority(); // 첫 번째 권한 추출
 
-        // 권한 컬렉션에서 첫 번째 권한을 가져옴 (여기서는 단일 권한만 사용한다고 가정)
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
+        // JWT 토큰 생성 (Access Token: 10분, Refresh Token: 24시간)
+        String accessToken = jwtUtil.createJwt("access", username, role, 600000L); // 10분
+        String refreshToken = jwtUtil.createJwt("refresh", username, role, 86400000L); // 24시간
 
-        // JWT 토큰 생성. 이메일과 역할(role)을 포함하며, 토큰 만료 시간은 10시간으로 설정
-        String token = jwtUtil.createJwt(email, role, 60 * 60 * 10000L);
+        //Refresh 토큰 저장
+        addRefreshEntity(username, refreshToken, 86400000L);
 
-        // JWT를 Authorization 헤더에 추가
-        response.addHeader("Authorization", "Bearer " + token);
+        // Access Token을 헤더에 추가
+        response.setHeader("Authorization", "Bearer " + accessToken);
+
+        // Refresh Token을 HttpOnly Cookie로 설정
+        Cookie refreshCookie = createCookie("refresh", refreshToken);
+        response.addCookie(refreshCookie);
 
         // 응답 바디에 성공 메시지 추가
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        // 공통 성공 응답 생성
         SuccessResponseDto<String> successResponse = SuccessResponseDto.successMessage("로그인 성공");
-
-        // 응답 바디에 JSON으로 성공 응답 반환
-        response.getWriter()
-                .write(new ObjectMapper().writeValueAsString(successResponse));
-        response.getWriter()
-                .flush();
+        response.getWriter().write(new ObjectMapper().writeValueAsString(successResponse));
+        response.getWriter().flush();
     }
 
     //로그인 실패시 실행하는 메소드
@@ -105,6 +106,29 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 .write(new ObjectMapper().writeValueAsString(errorResponse));
         response.getWriter()
                 .flush();
+    }
+
+    private Cookie createCookie(String key, String value) {
+
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(24*60*60);
+        //cookie.setSecure(true);
+        //cookie.setPath("/");
+        cookie.setHttpOnly(true);
+
+        return cookie;
+    }
+
+    private void addRefreshEntity(String username, String refresh, Long expiredMs) {
+
+        Date date = new Date(System.currentTimeMillis() + expiredMs);
+
+        RefreshEntity refreshEntity = new RefreshEntity();
+        refreshEntity.setUsername(username);
+        refreshEntity.setRefresh(refresh);
+        refreshEntity.setExpiration(date.toString());
+
+        refreshRepository.save(refreshEntity);
     }
 
     @Override
