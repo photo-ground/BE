@@ -12,6 +12,7 @@ import lombok.Getter;
 public class ReservationInfoResponse {
 
     private String photographerName;
+    private String photographerProfileUrl;
     private String univName;
     private int reserveNum;
     private LocalDate date;
@@ -23,6 +24,7 @@ public class ReservationInfoResponse {
     public static ReservationInfoResponse of(Reservation reservation, PhotoProfile profile) {
         return ReservationInfoResponse.builder()
                 .photographerName(profile.getNickname())
+                .photographerProfileUrl(profile.getProfileUrl())
                 .univName(reservation.getUniv().getName())
                 .reserveNum(reservation.getReserveNum())
                 .date(reservation.getDate())
