@@ -51,6 +51,12 @@ dependencies {
 
     // Security
     implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Email
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    // Retry
+    implementation 'org.springframework.retry:spring-retry:2.0.1' // 최신 버전
 }
 
 tasks.named('test') {

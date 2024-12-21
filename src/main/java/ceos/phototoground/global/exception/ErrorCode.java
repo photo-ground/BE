@@ -48,7 +48,10 @@ public enum ErrorCode {
     CUSTOMER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 고객은 존재하지 않습니다."),
 
     //Reservation
-    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 예약은 존재하지 않습니다.");
+    RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 예약은 존재하지 않습니다."),
+
+    //Email
+    EMAIL_NOT_SENT(HttpStatus.BAD_REQUEST, "이메일 전송이 실패하였습니다.");
 
     private final HttpStatus status;
     private final String message;

@@ -5,6 +5,8 @@ import ceos.phototoground.calendar.service.CalendarService;
 import ceos.phototoground.calendar.service.PhotographerCalendarService;
 import ceos.phototoground.customer.domain.Customer;
 import ceos.phototoground.customer.service.CustomerService;
+import ceos.phototoground.email.dto.EmailDTO;
+import ceos.phototoground.email.service.EmailService;
 import ceos.phototoground.global.exception.CustomException;
 import ceos.phototoground.global.exception.ErrorCode;
 import ceos.phototoground.photoProfile.domain.PhotoProfile;
@@ -43,6 +45,7 @@ public class ReservationService {
     private final UnivService univService;
     private final PhotographerService photographerService;
     private final CustomerService customerService;
+    private final EmailService emailService;
 
     // 예약신청 페이지 조회
     public PhotographerReservationInfo getPhotographerReservationInfo(Long photographerId) {
@@ -76,6 +79,9 @@ public class ReservationService {
 
         Reservation reservation = Reservation.createReservation(customer, photographer, univ, requestReservationDTO);
 
+        EmailDTO emailDTO = new EmailDTO(customer, photographer);
+        emailService.sendEmailWithRetry(emailDTO);
+
         reservationRepository.save(reservation);
     }
 
@@ -86,6 +92,9 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
         reservation.changeStatus(Status.CANCELED);
+
+        EmailDTO emailDTO = new EmailDTO(reservation);
+        emailService.sendEmailWithRetry(emailDTO);
 
     }
 
