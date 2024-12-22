@@ -21,17 +21,18 @@ public class ApiExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex) {
         String errorMessage = ex.getBindingResult()
-                                .getAllErrors()
-                                .get(0)
-                                .getDefaultMessage(); // 첫 번째 에러 메시지 가져오기
+                .getAllErrors()
+                .get(0)
+                .getDefaultMessage(); // 첫 번째 에러 메시지 가져오기
 
         log.error("[Validation Error] {}", errorMessage);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.builder()
-                                   .status(HttpStatus.BAD_REQUEST)
-                                   .code("VALIDATION_ERROR")
-                                   .message(errorMessage)
-                                   .build());
+                        .status(HttpStatus.BAD_REQUEST)
+                        .code("VALIDATION_ERROR")
+                        .message(errorMessage)
+                        .build());
     }
+
 }
