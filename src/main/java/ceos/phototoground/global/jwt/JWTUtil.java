@@ -27,13 +27,18 @@ public class JWTUtil { // JWTUtil : 0.12.3 ver
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }
 
+    public String getCategory(String token) {
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
+    }
+
     public Boolean isExpired(String token) {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createJwt(String email, String role, Long expiredMs) {
+    public String createJwt(String category, String email, String role, Long expiredMs) {
         // JWT 발급
         return Jwts.builder()
+                   .claim("category", category)
                    .claim("username", email)
                    .claim("role", role)
                    .issuedAt(new Date(System.currentTimeMillis()))
