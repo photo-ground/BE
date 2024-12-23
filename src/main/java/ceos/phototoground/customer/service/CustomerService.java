@@ -33,4 +33,9 @@ public class CustomerService {
         Customer customer = dto.toEntity(bCryptPasswordEncoder.encode(password), UserRole.USER);
         customerRepository.save(customer);
     }
+
+    public Customer findById(Long customerId) {
+        return customerRepository.findById(customerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
+    }
 }

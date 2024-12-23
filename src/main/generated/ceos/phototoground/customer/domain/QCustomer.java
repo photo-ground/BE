@@ -32,6 +32,8 @@ public class QCustomer extends EntityPathBase<Customer> {
 
     public final EnumPath<ceos.phototoground.photographer.domain.MyUniv> myUniv = createEnum("myUniv", ceos.phototoground.photographer.domain.MyUniv.class);
 
+    public final StringPath name = createString("name");
+
     public final StringPath password = createString("password");
 
     public final StringPath phone = createString("phone");

@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface PhotoProfileRepository extends JpaRepository<PhotoProfile, Long>, PhotoProfileRepositoryCustom {
-    Optional<PhotoProfile> findByPhotographerId(Long photographerId);
+    Optional<PhotoProfile> findByPhotographer_Id(Long photographerId);
 }
