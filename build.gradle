@@ -57,6 +57,9 @@ dependencies {
 
     // Retry
     implementation 'org.springframework.retry:spring-retry:2.0.1' // 최신 버전
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {
