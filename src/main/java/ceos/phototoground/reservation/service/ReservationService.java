@@ -28,6 +28,7 @@ import ceos.phototoground.univ.service.PhotographerUnivService;
 import ceos.phototoground.univ.service.UnivService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +47,10 @@ public class ReservationService {
     private final PhotographerService photographerService;
     private final CustomerService customerService;
     private final EmailService emailService;
+
+    // 포그 이메일 계정
+    @Value("${spring.mail.username}")
+    private String username;
 
     // 예약신청 페이지 조회
     public PhotographerReservationInfo getPhotographerReservationInfo(Long photographerId) {
@@ -80,7 +85,7 @@ public class ReservationService {
         Reservation reservation = Reservation.createReservation(customer, photographer, univ, requestReservationDTO);
 
         EmailDTO emailDTO = new EmailDTO(customer, photographer);
-        emailService.sendEmailWithRetry(emailDTO);
+        emailService.sendEmailWithRetry(emailDTO, username);
 
         reservationRepository.save(reservation);
     }
@@ -94,7 +99,7 @@ public class ReservationService {
         reservation.changeStatus(Status.CANCELED);
 
         EmailDTO emailDTO = new EmailDTO(reservation);
-        emailService.sendEmailWithRetry(emailDTO);
+        emailService.sendEmailWithRetry(emailDTO, username);
 
     }
 
