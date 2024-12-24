@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,10 +54,13 @@ public class CustomerController {
         boolean isVerified = emailService.verifyCode(verification);
 
         Map<String, String> response = new HashMap<>();
-        String res = isVerified ? "인증이 성공했습니다." : "인증이 실패했습니다.";
-
-        response.put("message", res);
-        return ResponseEntity.ok(response);
-
+        
+        if (isVerified) {
+            response.put("message", "인증이 성공했습니다.");
+            return ResponseEntity.ok(response); // 200 OK
+        } else {
+            response.put("message", "인증이 실패했습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response); // 401 Unauthorized
+        }
     }
 }

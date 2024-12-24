@@ -9,13 +9,10 @@ import ceos.phototoground.photographer.domain.MyUniv;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Getter
 @AllArgsConstructor // 모든 필드에 대한 생성자 자동 생성
@@ -38,16 +35,21 @@ public class CustomerJoinRequestDto {
     @Enumerated(EnumType.STRING)
     private MyUniv myUniv;
 
+    @NotNull(message = "사용자 이름은 필수 입력값입니다.")
+    private String name;
+
+
     // DTO -> Entity 변환
     public Customer toEntity(String encryptedPassword, UserRole role) {
         return Customer.builder()
-                       .email(this.email)
-                       .password(encryptedPassword) // 암호화된 비밀번호 전달
-                       .phone(this.phone)
-                       .gender(this.gender)
-                       .role(role)
-                       .myUniv(this.myUniv)
-                       .build();
+                .email(this.email)
+                .password(encryptedPassword) // 암호화된 비밀번호 전달
+                .phone(this.phone)
+                .gender(this.gender)
+                .role(role)
+                .myUniv(this.myUniv)
+                .name(this.name)
+                .build();
     }
 
     public void validatePassword() {

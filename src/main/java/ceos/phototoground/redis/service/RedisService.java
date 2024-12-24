@@ -66,4 +66,9 @@ public class RedisService {  // Redis에 저장, 조회, 삭제하는 메서드�
     public boolean checkExistsValue(String value) {
         return !value.equals("false");
     }
+
+    // 특정 키가 있는지 확인
+    public boolean hasKey(String key) {
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
 }

@@ -76,7 +76,7 @@ public class EmailService {
 
         // 이메일 인증 요청 시 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
         redisService.setValues(AUTH_CODE_PREFIX + customerEmailDTO.getEmail(),
-                authCode, Duration.ofMillis(300000));  //5 분
+                authCode, Duration.ofMillis(600000));  //10 분
     }
 
     private String createCode() {
@@ -106,6 +106,17 @@ public class EmailService {
         boolean authResult = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(
                 verification.getVerificationCode());
 
+        // 인증 완료 후 해당 key의 value값을 authCode->true 값으로 수정 (for 회원가입)
+        if (authResult) {
+            redisService.setValues(AUTH_CODE_PREFIX + verification.getEmail(), "true");
+        }
+
         return authResult;
+    }
+
+    // 인증완료 여부
+    public boolean isCertified(String email) {
+        return redisService.hasKey(AUTH_CODE_PREFIX + email) && "true".equals(
+                redisService.getValues(AUTH_CODE_PREFIX + email));
     }
 }
