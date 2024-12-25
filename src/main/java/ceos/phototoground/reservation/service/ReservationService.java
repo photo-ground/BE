@@ -15,9 +15,11 @@ import ceos.phototoground.photographer.domain.Photographer;
 import ceos.phototoground.photographer.service.PhotographerService;
 import ceos.phototoground.reservation.domain.Reservation;
 import ceos.phototoground.reservation.domain.Status;
+import ceos.phototoground.reservation.dto.PaymentRequestDTO;
 import ceos.phototoground.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.reservation.dto.RequestReservationDTO;
 import ceos.phototoground.reservation.dto.ReservationInfoResponse;
+import ceos.phototoground.reservation.dto.ReservationStateDTO;
 import ceos.phototoground.reservation.repository.ReservationRepository;
 import ceos.phototoground.schedule.domain.Schedule;
 import ceos.phototoground.schedule.dto.WeekDaySchedule;
@@ -115,5 +117,17 @@ public class ReservationService {
         PhotoProfile profile = photoProfileService.findByPhotographer_Id(reservation.getPhotographer().getId());
 
         return ReservationInfoResponse.of(reservation, profile);
+    }
+
+    //예약 입금 확인 요청
+    @Transactional
+    public ReservationStateDTO sendPaymentRequest(Long reservationId, PaymentRequestDTO paymentRequestDTO) {
+
+        Long payerId = paymentRequestDTO.getPayerId();
+        Reservation reservation = reservationRepository.findByCustomer_Id(payerId);
+
+        reservation.changeStatus(Status.PAYMENT_PENDING);
+
+        return ReservationStateDTO.of(reservation.getId(), "결제확인중");
     }
 }
