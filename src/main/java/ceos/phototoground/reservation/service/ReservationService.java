@@ -26,6 +26,7 @@ import ceos.phototoground.univ.domain.PhotographerUniv;
 import ceos.phototoground.univ.domain.Univ;
 import ceos.phototoground.univ.service.PhotographerUnivService;
 import ceos.phototoground.univ.service.UnivService;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,7 +58,9 @@ public class ReservationService {
         // calendar(photographerCalendar와 연관), schedule(photographer와 연관), univ(photographerUniv와 연관), nickname(photoProfile과 연관), price(photoProfile과 연관), addPrice(photoProfile과 연관)
         PhotoProfile profile = photoProfileService.findByPhotographer_Id(photographerId);
 
-        List<PhotographerCalendar> photoCalendar = photographerCalendarService.findByPhotographer_Id(photographerId);
+        // 현재 날짜로부터 한달 뒤까지만 조회
+        List<PhotographerCalendar> photoCalendar = photographerCalendarService.findByPhotographer_IdAndDateBetween(
+                photographerId, LocalDate.now());
         List<String> availDates = calendarService.findByIdIn(photoCalendar);
 
         // 촬영 가능 대학
