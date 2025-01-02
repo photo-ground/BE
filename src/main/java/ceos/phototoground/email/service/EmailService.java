@@ -106,7 +106,7 @@ public class EmailService {
         boolean authResult = redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(
                 verification.getVerificationCode());
 
-        // 인증 완료 후 해당 key의 value값을 authCode->true 값으로 수정 (for 회원가입)
+        // 인증 완료 후 해당 key의 value값을 authCode->true 값으로 수정 (for 회원가입) : 변경할 때도 TTL 설정해줘야 적용됨
         if (authResult) {
             redisService.setValues(AUTH_CODE_PREFIX + verification.getEmail(), "true", Duration.ofMillis(600000));
         }
