@@ -15,9 +15,11 @@ import ceos.phototoground.photographer.domain.Photographer;
 import ceos.phototoground.photographer.service.PhotographerService;
 import ceos.phototoground.reservation.domain.Reservation;
 import ceos.phototoground.reservation.domain.Status;
+import ceos.phototoground.reservation.dto.PaymentRequestDTO;
 import ceos.phototoground.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.reservation.dto.RequestReservationDTO;
 import ceos.phototoground.reservation.dto.ReservationInfoResponse;
+import ceos.phototoground.reservation.dto.ReservationStateDTO;
 import ceos.phototoground.reservation.repository.ReservationRepository;
 import ceos.phototoground.schedule.domain.Schedule;
 import ceos.phototoground.schedule.dto.WeekDaySchedule;
@@ -26,8 +28,10 @@ import ceos.phototoground.univ.domain.PhotographerUniv;
 import ceos.phototoground.univ.domain.Univ;
 import ceos.phototoground.univ.service.PhotographerUnivService;
 import ceos.phototoground.univ.service.UnivService;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,12 +51,18 @@ public class ReservationService {
     private final CustomerService customerService;
     private final EmailService emailService;
 
+    // 포그 이메일 계정
+    @Value("${spring.mail.username}")
+    private String username;
+
     // 예약신청 페이지 조회
     public PhotographerReservationInfo getPhotographerReservationInfo(Long photographerId) {
         // calendar(photographerCalendar와 연관), schedule(photographer와 연관), univ(photographerUniv와 연관), nickname(photoProfile과 연관), price(photoProfile과 연관), addPrice(photoProfile과 연관)
         PhotoProfile profile = photoProfileService.findByPhotographer_Id(photographerId);
 
-        List<PhotographerCalendar> photoCalendar = photographerCalendarService.findByPhotographer_Id(photographerId);
+        // 현재 날짜로부터 한달 뒤까지만 조회
+        List<PhotographerCalendar> photoCalendar = photographerCalendarService.findByPhotographer_IdAndDateBetween(
+                photographerId, LocalDate.now());
         List<String> availDates = calendarService.findByIdIn(photoCalendar);
 
         // 촬영 가능 대학
@@ -80,7 +90,7 @@ public class ReservationService {
         Reservation reservation = Reservation.createReservation(customer, photographer, univ, requestReservationDTO);
 
         EmailDTO emailDTO = new EmailDTO(customer, photographer);
-        emailService.sendEmailWithRetry(emailDTO);
+        emailService.sendEmailWithRetry(emailDTO, username);
 
         reservationRepository.save(reservation);
     }
@@ -94,7 +104,7 @@ public class ReservationService {
         reservation.changeStatus(Status.CANCELED);
 
         EmailDTO emailDTO = new EmailDTO(reservation);
-        emailService.sendEmailWithRetry(emailDTO);
+        emailService.sendEmailWithRetry(emailDTO, username);
 
     }
 
@@ -107,5 +117,17 @@ public class ReservationService {
         PhotoProfile profile = photoProfileService.findByPhotographer_Id(reservation.getPhotographer().getId());
 
         return ReservationInfoResponse.of(reservation, profile);
+    }
+
+    //예약 입금 확인 요청
+    @Transactional
+    public ReservationStateDTO sendPaymentRequest(Long reservationId, PaymentRequestDTO paymentRequestDTO) {
+
+        Long payerId = paymentRequestDTO.getPayerId();
+        Reservation reservation = reservationRepository.findByCustomer_Id(payerId);
+
+        reservation.changeStatus(Status.PAYMENT_PENDING);
+
+        return ReservationStateDTO.of(reservation.getId(), "결제확인중");
     }
 }

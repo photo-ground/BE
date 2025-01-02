@@ -24,4 +24,10 @@ public class EmailDTO {
         this.text = reservation.getCustomer().getId() + " 번 id의 고객님께서" + reservation.getPhotographer().getId()
                 + " 번 id의 작가님 예약을 취소하셨습니다. 취소된 예약 id는 " + reservation.getId() + " 번 입니다.";
     }
+
+    public EmailDTO(String code) {
+
+        this.subject = "[포토그라운드] 인증번호를 안내해 드립니다.";
+        this.text = "[포토그라운드] 인증번호 [" + code + "]를 입력해주세요.";
+    }
 }

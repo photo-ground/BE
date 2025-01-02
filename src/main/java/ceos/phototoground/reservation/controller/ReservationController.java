@@ -1,8 +1,10 @@
 package ceos.phototoground.reservation.controller;
 
+import ceos.phototoground.reservation.dto.PaymentRequestDTO;
 import ceos.phototoground.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.reservation.dto.RequestReservationDTO;
 import ceos.phototoground.reservation.dto.ReservationInfoResponse;
+import ceos.phototoground.reservation.dto.ReservationStateDTO;
 import ceos.phototoground.reservation.service.ReservationService;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,4 +68,14 @@ public class ReservationController {
         ReservationInfoResponse dto = reservationService.getOneReservationDetail(reservationId);
         return ResponseEntity.ok(dto);
     }
+
+    // 입금 확인 요청
+    @PatchMapping("/reservation/{reservationId}/payment")
+    public ResponseEntity<ReservationStateDTO> sendPaymentRequest(@PathVariable("reservationId") Long reservationId,
+                                                                  @RequestBody PaymentRequestDTO paymentRequestDTO) {
+
+        ReservationStateDTO dto = reservationService.sendPaymentRequest(reservationId, paymentRequestDTO);
+        return ResponseEntity.ok(dto);
+    }
+
 }
