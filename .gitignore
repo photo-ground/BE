@@ -5,6 +5,7 @@ application-secret.yml
 application-green.yml
 application-blue.yml
 application-common.yml
+application-prod.yml
 
 HELP.md
 .gradle
