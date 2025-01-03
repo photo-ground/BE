@@ -1,6 +1,5 @@
 package ceos.phototoground.global.jwt;
 
-import ceos.phototoground.customer.dto.CustomUserDetails;
 import ceos.phototoground.global.dto.ErrorResponseDto;
 import ceos.phototoground.global.dto.SuccessResponseDto;
 import ceos.phototoground.global.entity.RefreshEntity;
@@ -13,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
