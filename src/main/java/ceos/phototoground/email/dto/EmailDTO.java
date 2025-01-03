@@ -1,8 +1,8 @@
 package ceos.phototoground.email.dto;
 
-import ceos.phototoground.customer.domain.Customer;
-import ceos.phototoground.photographer.domain.Photographer;
-import ceos.phototoground.reservation.domain.Reservation;
+import ceos.phototoground.domain.customer.entity.Customer;
+import ceos.phototoground.domain.photographer.entity.Photographer;
+import ceos.phototoground.domain.reservation.entity.Reservation;
 import lombok.Getter;
 
 @Getter

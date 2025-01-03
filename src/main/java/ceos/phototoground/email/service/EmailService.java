@@ -1,7 +1,7 @@
 package ceos.phototoground.email.service;
 
-import ceos.phototoground.customer.dto.CustomerEmailDTO;
-import ceos.phototoground.customer.dto.VerificationDTO;
+import ceos.phototoground.domain.customer.dto.CustomerEmailDTO;
+import ceos.phototoground.domain.customer.dto.VerificationDTO;
 import ceos.phototoground.email.dto.EmailDTO;
 import ceos.phototoground.global.exception.CustomException;
 import ceos.phototoground.global.exception.ErrorCode;
