@@ -1,12 +1,9 @@
 package ceos.phototoground.global.jwt;
 
-import ceos.phototoground.customer.domain.UserRole;
-import ceos.phototoground.customer.dto.CustomUserDetails;
-import ceos.phototoground.customer.domain.Customer;
+import ceos.phototoground.domain.customer.entity.UserRole;
+import ceos.phototoground.domain.customer.dto.CustomUserDetails;
+import ceos.phototoground.domain.customer.entity.Customer;
 import ceos.phototoground.global.dto.ErrorResponseDto;
-import ceos.phototoground.global.exception.CustomException;
-import ceos.phototoground.global.exception.ErrorCode;
-import ceos.phototoground.global.exception.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -15,8 +12,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
