@@ -3,6 +3,7 @@ package ceos.phototoground.domain.reservation.controller;
 import ceos.phototoground.domain.reservation.dto.PaymentRequestDTO;
 import ceos.phototoground.domain.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.domain.reservation.dto.RequestReservationDTO;
+import ceos.phototoground.domain.reservation.dto.ReservationInfoListDTO;
 import ceos.phototoground.domain.reservation.dto.ReservationInfoResponse;
 import ceos.phototoground.domain.reservation.dto.ReservationStateDTO;
 import ceos.phototoground.domain.reservation.dto.ReservationStatusInfo;
@@ -87,6 +88,14 @@ public class ReservationController {
                                                                       @RequestParam String yearMonth) {
 
         ReservationStatusInfo dto = reservationService.getReservationStatus(customerId, yearMonth);
+        return ResponseEntity.ok(dto);
+    }
+
+    // 진행중인 스냅 전체 조회 (촬영완료 제외 단계)
+    @GetMapping("/reservation/active/{customerId}")
+    public ResponseEntity<ReservationInfoListDTO> getReservationList(@PathVariable Long customerId) {
+
+        ReservationInfoListDTO dto = reservationService.getReservationList(customerId);
         return ResponseEntity.ok(dto);
     }
 

@@ -13,6 +13,8 @@ import ceos.phototoground.domain.reservation.dto.DateScheduleDTO;
 import ceos.phototoground.domain.reservation.dto.PaymentRequestDTO;
 import ceos.phototoground.domain.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.domain.reservation.dto.RequestReservationDTO;
+import ceos.phototoground.domain.reservation.dto.ReservationInfoDTO;
+import ceos.phototoground.domain.reservation.dto.ReservationInfoListDTO;
 import ceos.phototoground.domain.reservation.dto.ReservationInfoResponse;
 import ceos.phototoground.domain.reservation.dto.ReservationStateDTO;
 import ceos.phototoground.domain.reservation.dto.ReservationStatusInfo;
@@ -84,6 +86,7 @@ public class ReservationService {
         return PhotographerReservationInfo.of(profile, weekDaySchedule, availDates, univName);
     }
 
+
     //예약신청
     @Transactional
     public void createReservation(RequestReservationDTO requestReservationDTO, Long photographerId, Long customerId) {
@@ -100,6 +103,7 @@ public class ReservationService {
         reservationRepository.save(reservation);
     }
 
+
     //예약취소
     @Transactional
     public void cancelReservation(Long reservationId) {
@@ -113,6 +117,7 @@ public class ReservationService {
 
     }
 
+
     //예약상세 조회
     public ReservationInfoResponse getOneReservationDetail(Long reservationId) {
 
@@ -123,6 +128,7 @@ public class ReservationService {
 
         return ReservationInfoResponse.of(reservation, profile);
     }
+
 
     //예약 입금 확인 요청
     @Transactional
@@ -135,6 +141,7 @@ public class ReservationService {
 
         return ReservationStateDTO.of(reservation.getId(), "결제확인중");
     }
+
 
     //예약 현황 조회
     public ReservationStatusInfo getReservationStatus(Long customerId, String yearMonth) {
@@ -155,6 +162,19 @@ public class ReservationService {
         return ReservationStatusInfo.from(dateSchedules);
     }
 
+
+    // 진행중인 스냅 전체 조회 (촬영완료 제외 단계)
+    public ReservationInfoListDTO getReservationList(Long customerId) {
+
+        List<Reservation> reservations = reservationRepository.findByCustomer_IdAndStatusNot(customerId,
+                Status.COMPLETED);
+
+        List<ReservationInfoDTO> dtos = reservations.stream().map(ReservationInfoDTO::from).toList();
+        return ReservationInfoListDTO.from(dtos);
+    }
+
+
+    // 유효한 타입인지 확인
     private void validateYearMonth(String yearMonth) {
         try {
             YearMonth.parse(yearMonth); // "2025-01" 형식이 아닌 경우 예외 발생
@@ -163,4 +183,6 @@ public class ReservationService {
             throw new CustomException(ErrorCode.NOT_VALID_TYPE_YEAR_MONTH);
         }
     }
+
+
 }

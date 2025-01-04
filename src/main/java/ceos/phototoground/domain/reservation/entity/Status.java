@@ -11,7 +11,7 @@ public enum Status {
     PAYMENT_CONFIRMED("결제확인"),
     PAYMENT_ERROR("결제오류"),
     CONFIRMED("예약확정"),
-    COMPLETED("촬영완료");
+    COMPLETED("촬영완료");ㅊ
 
     private final String name; //한국어 이름
 
