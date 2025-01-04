@@ -49,10 +49,12 @@ public enum ErrorCode {
 
     //Reservation
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 예약은 존재하지 않습니다."),
+    NOT_VALID_TYPE_YEAR_MONTH(HttpStatus.BAD_REQUEST, "yearMonth 타입이 잘못되었습니다."),
 
     //Email
     EMAIL_NOT_SENT(HttpStatus.BAD_REQUEST, "이메일 전송이 실패하였습니다."),
     NO_SUCH_ALGORITHM(HttpStatus.INTERNAL_SERVER_ERROR, "요청한 알고리즘이 지원되지 않습니다."),
+
     EMAIL_NOT_CERTIFIED(HttpStatus.BAD_REQUEST, "이메일 인증을 해주세요.");
 
     private final HttpStatus status;
