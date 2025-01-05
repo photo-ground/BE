@@ -17,24 +17,24 @@ import lombok.Setter;
 public class PhotographerReviewsResponseDto {
     private int count; // 리뷰 개수
     private double averageScore; // 평균 점수
-    private List<ReviewDetailDto> reviews; // 리뷰 상세 목록
+    private List<ReviewResponseDto> reviews; // 리뷰 상세 목록
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class ReviewDetailDto {
-        private Long reviewId;
-        private LocalDateTime createdAt;
-        private String content;
-
-        public static ReviewDetailDto fromEntity(Review review) {
-            return ReviewDetailDto.builder()
-                                  .reviewId(review.getId())
-                                  .createdAt(review.getCreatedAt())
-                                  .content(review.getContent())
-                                  .build();
-        }
-    }
+//    @Getter
+//    @Setter
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    @Builder
+//    public static class ReviewDetailDto {
+//        private Long reviewId;
+//        private LocalDateTime createdAt;
+//        private String content;
+//
+//        public static ReviewDetailDto fromEntity(Review review) {
+//            return ReviewDetailDto.builder()
+//                                  .reviewId(review.getId())
+//                                  .createdAt(review.getCreatedAt())
+//                                  .content(review.getContent())
+//                                  .build();
+//        }
+//    }
 }

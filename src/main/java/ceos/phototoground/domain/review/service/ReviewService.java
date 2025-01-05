@@ -1,5 +1,6 @@
 package ceos.phototoground.domain.review.service;
 
+import ceos.phototoground.domain.reservation.entity.Status;
 import org.springframework.transaction.annotation.Transactional;
 import ceos.phototoground.domain.photographer.entity.Photographer;
 import ceos.phototoground.domain.photographer.repository.PhotographerRepository;
@@ -35,6 +36,11 @@ public class ReviewService {
         // 예약의 고객 ID와 현재 로그인된 고객 ID 일치 여부 확인
         if (!reservation.getCustomer().getId().equals(customerId)) {
             throw new CustomException(ErrorCode.REVIEW_PERMISSION_DENIED);
+        }
+
+        // 예약 상태가 "촬영완료(COMPLETED)"가 아닌 경우 예외 처리
+        if (reservation.getStatus() != Status.COMPLETED) {
+            throw new CustomException(ErrorCode.REVIEW_NOT_ALLOWED);
         }
 
         // 이미 리뷰 작성 완료 여부 확인
@@ -76,8 +82,8 @@ public class ReviewService {
                                      .orElse(0.0);
 
         // 리뷰 목록 변환
-        List<PhotographerReviewsResponseDto.ReviewDetailDto> reviewDetails = reviews.stream()
-                                                                                    .map(PhotographerReviewsResponseDto.ReviewDetailDto::fromEntity)
+        List<ReviewResponseDto> reviewDetails = reviews.stream()
+                                                                                    .map(ReviewResponseDto::fromEntity)
                                                                                     .toList();
 
         // 응답 DTO 생성
@@ -88,7 +94,34 @@ public class ReviewService {
                                              .build();
     }
 
-    // 리뷰 단 건 조회
+    // 고객의 리뷰 전체 조회
+    @Transactional(readOnly = true)
+    public PhotographerReviewsResponseDto getCustomerReviews(Long customerId) {
+        // 고객이 작성한 리뷰 조회 (최신 순 정렬)
+        List<Review> reviews = reviewRepository.findByCustomerIdOrderByCreatedAtDesc(customerId);
+
+        // 리뷰 개수
+        int count = reviews.size();
+
+        // 평균 평점 계산
+        double averageScore = reviews.stream()
+                                     .mapToInt(Review::getScore)
+                                     .average()
+                                     .orElse(0.0);
+
+        // 리뷰 목록 변환
+        List<ReviewResponseDto> reviewDetails = reviews.stream()
+                                                       .map(ReviewResponseDto::fromEntity)
+                                                       .toList();
+        // 응답 DTO 생성
+        return PhotographerReviewsResponseDto.builder()
+                                             .count(count)
+                                             .averageScore(averageScore)
+                                             .reviews(reviewDetails)
+                                             .build();
+    }
+
+    // 리뷰 단건 조회
     public ReviewResponseDto getReviewById(Long reviewId) {
         // 리뷰 조회
         Review review = reviewRepository.findById(reviewId)

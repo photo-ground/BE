@@ -16,7 +16,7 @@ import lombok.Setter;
 public class ReviewResponseDto {
     private Long reviewId;
     private Long reservationId;
-    private boolean reviewComplete;
+    private String photographerName;
     private String content;
     private int score;
     private LocalDateTime createdAt;
@@ -24,8 +24,12 @@ public class ReviewResponseDto {
     public static ReviewResponseDto fromEntity(Review review) {
         return ReviewResponseDto.builder()
                                 .reviewId(review.getId())
-                                .reservationId(review.getReservation().getId())
-                                .reviewComplete(review.getReservation().isReviewComplete())
+                                .reservationId(review.getReservation()
+                                                     .getId())
+                                .photographerName(review.getReservation()
+                                                        .getPhotographer()
+                                                        .getPhotoProfile()
+                                                        .getNickname())
                                 .content(review.getContent())
                                 .score(review.getScore())
                                 .createdAt(review.getCreatedAt())

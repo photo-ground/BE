@@ -39,21 +39,33 @@ public class ReviewController {
         return ResponseEntity.ok(responseDto);
     }
 
+    // 고객의 모든 리뷰 조회
+    @GetMapping("/review")
+    public ResponseEntity<PhotographerReviewsResponseDto> getCustomerReviews(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        // 로그인된 고객의 ID 가져오기
+        Long customerId = userDetails.getCustomer().getId();
+
+        // 고객 리뷰 조회
+        PhotographerReviewsResponseDto responseDto = reviewService.getCustomerReviews(customerId);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    // 리뷰 단건 조회
+    @GetMapping("review/{reviewId}")
+    public ResponseEntity<ReviewResponseDto> getReviewById(@PathVariable Long reviewId) {
+        ReviewResponseDto responseDto = reviewService.getReviewById(reviewId);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
     // 작가의 모든 리뷰 조회
     @GetMapping("/photographer/{photographerId}/review")
     public ResponseEntity<PhotographerReviewsResponseDto> getPhotographerReviews(
             @PathVariable Long photographerId) {
         PhotographerReviewsResponseDto responseDto = reviewService.getPhotographerReviews(photographerId);
-
-        return ResponseEntity.ok(responseDto);
-    }
-
-    // 고객의 모든 리뷰 조회
-
-    // 리뷰 단건 조회
-    @GetMapping("/{reviewId}")
-    public ResponseEntity<ReviewResponseDto> getReviewById(@PathVariable Long reviewId) {
-        ReviewResponseDto responseDto = reviewService.getReviewById(reviewId);
 
         return ResponseEntity.ok(responseDto);
     }

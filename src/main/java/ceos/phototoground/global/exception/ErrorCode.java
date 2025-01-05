@@ -55,6 +55,7 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰를 찾을 수 없습니다."),
     REVIEW_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "리뷰가 이미 작성되었습니다."),
     REVIEW_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "이 예약에 대해 리뷰를 작성할 권한이 없습니다."),
+    REVIEW_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "리뷰는 촬영 완료된 예약에만 작성할 수 있습니다."),
 
     //Reservation
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 예약은 존재하지 않습니다."),
