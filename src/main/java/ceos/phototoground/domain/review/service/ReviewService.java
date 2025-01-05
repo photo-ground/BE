@@ -58,7 +58,7 @@ public class ReviewService {
         return ReviewResponseDto.fromEntity(review);
     }
 
-    // 작가의 리뷰 전체 조회
+    // 작가의 리뷰 전체 조회 구현
     public PhotographerReviewsResponseDto getPhotographerReviews(Long photographerId) {
         // 작가 정보 확인
         Photographer photographer = photographerRepository.findById(photographerId)
