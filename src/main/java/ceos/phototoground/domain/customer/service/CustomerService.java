@@ -7,12 +7,14 @@ import ceos.phototoground.domain.customer.repository.CustomerRepository;
 import ceos.phototoground.email.service.EmailService;
 import ceos.phototoground.global.exception.CustomException;
 import ceos.phototoground.global.exception.ErrorCode;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
@@ -40,6 +42,15 @@ public class CustomerService {
         } else {
             throw new CustomException(ErrorCode.EMAIL_NOT_CERTIFIED);
         }
+    }
+
+    public void deleteCustomer(Long customerId) {
+        // 회원 정보 조회
+        Customer customer = customerRepository.findById(customerId)
+                                              .orElseThrow(() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
+
+        // 소프트 삭제 처리
+        customer.delete();
     }
 
     public Customer findById(Long customerId) {

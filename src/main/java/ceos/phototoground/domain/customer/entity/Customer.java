@@ -39,6 +39,8 @@ public class Customer extends BaseTimeEntity {
 
     private String phone;
 
+    private boolean isDeleted = false; // 삭제 여부 (default: false)
+
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -49,4 +51,8 @@ public class Customer extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MyUniv myUniv;
 
+    // 회원 탈퇴 처리 메서드
+    public void delete() {
+        this.isDeleted = true;
+    }
 }
