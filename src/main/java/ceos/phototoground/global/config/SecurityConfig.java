@@ -1,5 +1,6 @@
 package ceos.phototoground.global.config;
 
+import ceos.phototoground.domain.customer.repository.CustomerRepository;
 import ceos.phototoground.global.entity.RefreshRepository;
 import ceos.phototoground.global.jwt.CustomLogoutFilter;
 import ceos.phototoground.global.jwt.JWTFilter;
@@ -31,6 +32,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
+    private final CustomerRepository customerRepository;
 
     //AuthenticationManager Bean 등록
     @Bean
@@ -86,7 +88,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()); // 이외의 남은 경로는 로그인한 사용자만 접근 가능
 
         // JWT 권한 검증
-        http.addFilterAfter(new JWTFilter(jwtUtil), LoginFilter.class);
+        http.addFilterAfter(new JWTFilter(jwtUtil, customerRepository), LoginFilter.class);
 
         // 로그인 필터 설정 (/login)
         http.addFilterAt(
