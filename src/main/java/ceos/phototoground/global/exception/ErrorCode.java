@@ -51,6 +51,10 @@ public enum ErrorCode {
     ALREADY_FOLLOWING(HttpStatus.CONFLICT, "이미 해당 사진작가를 팔로우하고 있습니다."),
     FOLLOW_RELATIONSHIP_NOT_FOUND(HttpStatus.NOT_FOUND, "팔로우 관계를 찾을 수 없습니다."),
 
+    //Review
+    REVIEW_ALREADY_COMPLETED(HttpStatus.BAD_REQUEST, "리뷰가 이미 작성되었습니다."),
+    REVIEW_PERMISSION_DENIED(HttpStatus.FORBIDDEN, "이 예약에 대해 리뷰를 작성할 권한이 없습니다."),
+
     //Reservation
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 예약은 존재하지 않습니다."),
 
