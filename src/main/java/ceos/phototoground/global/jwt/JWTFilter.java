@@ -32,44 +32,54 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 헤더에서 access키에 담긴 토큰을 꺼냄
-        String accessToken = request.getHeader("access");
+        // 헤더에서 Authorization 키를 가져옴
+        String accessToken = request.getHeader("Authorization");
 
-        // 토큰이 없다면 다음 필터로 넘김 (권한이 필요 없는 경우)
-        if (accessToken == null) {
+        // Authorization 헤더가 있고 Bearer 접두사로 시작하면 토큰만 추출
+        if (accessToken != null && accessToken.startsWith("Bearer ")) {
+            accessToken = accessToken.substring(7); // "Bearer " 이후의 토큰만 가져오기
+        } else {
+            // Authorization 헤더가 없거나 올바르지 않으면 다음 필터로 진행
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
-            // 토큰의 유효성 검사
+            // JWT 토큰의 만료 여부 확인
             jwtUtil.isExpired(accessToken);
 
-            // 토큰의 category 확인
+            // 토큰의 category 확인 (access token이어야 함)
             String category = jwtUtil.getCategory(accessToken);
             if (!category.equals("access")) {
                 sendErrorResponse(response, "Invalid token category", HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
-            // email 추출 및 사용자 로드
+            // 토큰에서 email(사용자 식별자) 추출
             String email = jwtUtil.getUsername(accessToken);
+
+            // 데이터베이스에서 사용자 정보 조회
             Customer customer = customerRepository.findByEmail(email)
                                                   .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-            // 인증 객체 생성
+            // 사용자 정보로 인증 객체 생성
             CustomUserDetails customUserDetails = new CustomUserDetails(customer);
             Authentication authToken = new UsernamePasswordAuthenticationToken(
                     customUserDetails, null, customUserDetails.getAuthorities());
+
+            // SecurityContext에 인증 객체 저장
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
         } catch (ExpiredJwtException e) {
+            // 토큰 만료 예외 처리
             sendErrorResponse(response, "Access token expired", HttpServletResponse.SC_UNAUTHORIZED);
             return;
         } catch (UsernameNotFoundException e) {
+            // 사용자 정보를 찾지 못했을 때 처리
             sendErrorResponse(response, e.getMessage(), HttpServletResponse.SC_UNAUTHORIZED);
             return;
         } catch (Exception e) {
+            // 기타 예외 처리
             sendErrorResponse(response, "Invalid access token", HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
