@@ -1,5 +1,6 @@
 package ceos.phototoground.domain.review.service;
 
+import org.springframework.transaction.annotation.Transactional;
 import ceos.phototoground.domain.photographer.entity.Photographer;
 import ceos.phototoground.domain.photographer.repository.PhotographerRepository;
 import ceos.phototoground.domain.reservation.entity.Reservation;
@@ -11,13 +12,13 @@ import ceos.phototoground.domain.review.entity.Review;
 import ceos.phototoground.domain.review.repository.ReviewRepository;
 import ceos.phototoground.global.exception.CustomException;
 import ceos.phototoground.global.exception.ErrorCode;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
@@ -85,5 +86,15 @@ public class ReviewService {
                                              .averageScore(averageScore)
                                              .reviews(reviewDetails)
                                              .build();
+    }
+
+    // 리뷰 단 건 조회
+    public ReviewResponseDto getReviewById(Long reviewId) {
+        // 리뷰 조회
+        Review review = reviewRepository.findById(reviewId)
+                                        .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+
+        // 응답 DTO로 변환
+        return ReviewResponseDto.fromEntity(review);
     }
 }

@@ -47,4 +47,14 @@ public class ReviewController {
 
         return ResponseEntity.ok(responseDto);
     }
+
+    // 고객의 모든 리뷰 조회
+
+    // 리뷰 단건 조회
+    @GetMapping("/{reviewId}")
+    public ResponseEntity<ReviewResponseDto> getReviewById(@PathVariable Long reviewId) {
+        ReviewResponseDto responseDto = reviewService.getReviewById(reviewId);
+
+        return ResponseEntity.ok(responseDto);
+    }
 }
