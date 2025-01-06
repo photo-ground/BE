@@ -1,5 +1,6 @@
 package ceos.phototoground.domain.customer.controller;
 
+import ceos.phototoground.domain.customer.dto.CustomUserDetails;
 import ceos.phototoground.domain.customer.dto.CustomerEmailDTO;
 import ceos.phototoground.domain.customer.dto.CustomerJoinRequestDto;
 import ceos.phototoground.domain.customer.dto.VerificationDTO;
@@ -13,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,11 +34,24 @@ public class CustomerController {
     private String username;
 
     @PostMapping("/join")
-    public ResponseEntity joinProcess(@Valid @RequestBody CustomerJoinRequestDto customerJoinRequestDto) {
+    public ResponseEntity<SuccessResponseDto<String>> joinProcess(@Valid @RequestBody CustomerJoinRequestDto customerJoinRequestDto) {
         customerService.joinCustomer(customerJoinRequestDto);
 
         return ResponseEntity.ok(
                 SuccessResponseDto.successMessage("회원가입이 완료되었습니다.")
+        );
+    }
+
+    @PatchMapping("/delete")
+    public ResponseEntity<SuccessResponseDto<String>> deleteCustomer(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        Long customerId = userDetails.getCustomer()
+                                     .getId();
+        customerService.deleteCustomer(customerId);
+
+        return ResponseEntity.ok(
+                SuccessResponseDto.successMessage("회원 탈퇴가 완료되었습니다.")
         );
     }
 
@@ -54,13 +71,14 @@ public class CustomerController {
         boolean isVerified = emailService.verifyCode(verification);
 
         Map<String, String> response = new HashMap<>();
-        
+
         if (isVerified) {
             response.put("message", "인증이 성공했습니다.");
             return ResponseEntity.ok(response); // 200 OK
         } else {
             response.put("message", "인증이 실패했습니다.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response); // 401 Unauthorized
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                 .body(response); // 401 Unauthorized
         }
     }
 }

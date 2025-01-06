@@ -30,6 +30,8 @@ public class QCustomer extends EntityPathBase<Customer> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final BooleanPath isDeleted = createBoolean("isDeleted");
+
     public final EnumPath<ceos.phototoground.domain.photographer.entity.MyUniv> myUniv = createEnum("myUniv", ceos.phototoground.domain.photographer.entity.MyUniv.class);
 
     public final StringPath name = createString("name");
