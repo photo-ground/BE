@@ -3,9 +3,12 @@ package ceos.phototoground.domain.reservation.controller;
 import ceos.phototoground.domain.reservation.dto.PaymentRequestDTO;
 import ceos.phototoground.domain.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.domain.reservation.dto.RequestReservationDTO;
+import ceos.phototoground.domain.reservation.dto.ReservationInfoListDTO;
 import ceos.phototoground.domain.reservation.dto.ReservationInfoResponse;
 import ceos.phototoground.domain.reservation.dto.ReservationStateDTO;
+import ceos.phototoground.domain.reservation.dto.ReservationStatusInfo;
 import ceos.phototoground.domain.reservation.service.ReservationService;
+import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -37,7 +41,7 @@ public class ReservationController {
     // 예약신청  (로그인 완성된 후 @AuthenticationPrincipal로 수정하기)
     @PostMapping("/reservation/{photographerId}/{customerId}")
     public ResponseEntity<Map<String, String>> createReservation(@PathVariable("photographerId") Long photographerId,
-                                                                 @RequestBody
+                                                                 @RequestBody @Valid
                                                                  RequestReservationDTO requestReservationDTO,
                                                                  @PathVariable("customerId") Long customerId) {
 
@@ -75,6 +79,23 @@ public class ReservationController {
                                                                   @RequestBody PaymentRequestDTO paymentRequestDTO) {
 
         ReservationStateDTO dto = reservationService.sendPaymentRequest(reservationId, paymentRequestDTO);
+        return ResponseEntity.ok(dto);
+    }
+
+    // 예약 현황 조회
+    @GetMapping("/reservation/info/{customerId}")
+    public ResponseEntity<ReservationStatusInfo> getReservationStatus(@PathVariable Long customerId,
+                                                                      @RequestParam String yearMonth) {
+
+        ReservationStatusInfo dto = reservationService.getReservationStatus(customerId, yearMonth);
+        return ResponseEntity.ok(dto);
+    }
+
+    // 진행중인 스냅 전체 조회 (촬영완료 제외 단계)
+    @GetMapping("/reservation/active/{customerId}")
+    public ResponseEntity<ReservationInfoListDTO> getReservationList(@PathVariable Long customerId) {
+
+        ReservationInfoListDTO dto = reservationService.getReservationList(customerId);
         return ResponseEntity.ok(dto);
     }
 
