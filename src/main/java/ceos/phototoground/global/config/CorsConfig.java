@@ -15,7 +15,7 @@ public class CorsConfig {
 
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("http://localhostL3001", "http://localhost:3000"));
+        config.setAllowedOrigins(List.of("http://localhost:3001", "http://localhost:3000"));
         config.setAllowedMethods(
                 List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")); //OPTIONS : Preflight 요청에 사용
         config.setAllowedHeaders(List.of("*"));
