@@ -12,7 +12,6 @@ public class CorsMvcConfig implements WebMvcConfigurer {
         // 컨트롤러 경로에 대해 요청을 허용
         corsRegistry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000", "http://localhost:3001")
-                .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                 .exposedHeaders("Authorization", "Set-Cookie")
                 .allowedHeaders("*")
