@@ -6,9 +6,6 @@ import ceos.phototoground.global.jwt.CustomLogoutFilter;
 import ceos.phototoground.global.jwt.JWTFilter;
 import ceos.phototoground.global.jwt.JWTUtil;
 import ceos.phototoground.global.jwt.LoginFilter;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity //Security config 설정
@@ -52,6 +47,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        /*
         //cors 설정
         http.cors((corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
             @Override
@@ -71,7 +67,9 @@ public class SecurityConfig {
                 return configuration;
             }
         })));
-
+        */
+        // CORS 활성화
+        http.cors(cors -> cors.configurationSource(request -> null));
         //csrf disable
         http.csrf((auth) -> auth.disable());
 
