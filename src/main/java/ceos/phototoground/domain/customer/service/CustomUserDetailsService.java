@@ -12,16 +12,17 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
+
     private final CustomerRepository customerRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Customer customer = customerRepository.findByEmail(email);
+        // Optional에서 사용자 정보를 가져오거나 예외를 던짐
+        Customer customer = customerRepository.findByEmail(email)
+                                              .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
-        if (customer != null) {
-            return new CustomUserDetails(customer);
-        }
-
-        return null;
+        // UserDetails로 래핑하여 반환
+        return new CustomUserDetails(customer);
     }
 }
+
