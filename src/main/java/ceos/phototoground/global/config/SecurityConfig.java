@@ -69,7 +69,8 @@ public class SecurityConfig {
         })));
         */
         // CORS 활성화
-        http.cors(cors -> cors.configurationSource(request -> null));
+        http.cors(c -> c.configurationSource(new CorsConfig().corsConfigurationSource()));
+
         //csrf disable
         http.csrf((auth) -> auth.disable());
 
