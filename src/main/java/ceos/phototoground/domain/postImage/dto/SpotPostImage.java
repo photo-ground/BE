@@ -15,7 +15,6 @@ public class SpotPostImage {
     private Long postId;
     private String photographerName;
 
-
     public static SpotPostImage of(PostImage postImage, Post post, PhotoProfile profile) {
         return SpotPostImage.builder()
                 .imageId(postImage.getId())
