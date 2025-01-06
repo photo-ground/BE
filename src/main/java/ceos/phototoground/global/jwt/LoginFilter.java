@@ -1,5 +1,6 @@
 package ceos.phototoground.global.jwt;
 
+import ceos.phototoground.domain.customer.dto.LoginRequestDto;
 import ceos.phototoground.global.dto.ErrorResponseDto;
 import ceos.phototoground.global.dto.SuccessResponseDto;
 import ceos.phototoground.global.entity.RefreshEntity;
@@ -32,15 +33,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
 
-        //클라이언트 요청에서 email, password 추출
-        String email = obtainUsername(request);
-        String password = obtainPassword(request);
+        try {
+            // 요청 본문에서 JSON 데이터를 읽어 DTO로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+            LoginRequestDto loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequestDto.class);
 
-        //스프링 시큐리티에서 email과 password를 검증하기 위해서는 token에 담아야 함
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, password, null);
+            String email = loginRequest.getEmail();
+            String password = loginRequest.getPassword();
 
-        //token에 담은 검증을 위한 AuthenticationManager로 전달 (검증 진행)
-        return authenticationManager.authenticate(authToken);
+            // UsernamePasswordAuthenticationToken 생성
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(email, password, null);
+
+            // AuthenticationManager로 인증 진행
+            return authenticationManager.authenticate(authToken);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to parse login request", e);
+        }
     }
 
     // authenticationManager에서 검증 후, 로그인 성공시 실행하는 메소드 (여기서 JWT를 발급하면 됨)
@@ -53,7 +62,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = authorities.iterator().next().getAuthority(); // 첫 번째 권한 추출
 
         // JWT 토큰 생성 (Access Token: 10분, Refresh Token: 24시간)
-        String accessToken = jwtUtil.createJwt("access", username, role, 600000L); // 10분
+        String accessToken = jwtUtil.createJwt("access", username, role, 3600000L); // 1시간
         String refreshToken = jwtUtil.createJwt("refresh", username, role, 86400000L); // 24시간
 
         //Refresh 토큰 저장
