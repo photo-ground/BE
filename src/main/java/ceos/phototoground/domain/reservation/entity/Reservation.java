@@ -1,12 +1,11 @@
 package ceos.phototoground.domain.reservation.entity;
 
 import ceos.phototoground.domain.customer.entity.Customer;
-import ceos.phototoground.global.entity.BaseTimeEntity;
 import ceos.phototoground.domain.photographer.entity.Photographer;
 import ceos.phototoground.domain.reservation.dto.RequestReservationDTO;
 import ceos.phototoground.domain.univ.entity.Univ;
+import ceos.phototoground.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -40,7 +39,7 @@ public class Reservation extends BaseTimeEntity {
     private int reserveNum;
 
     @NotNull
-    @Convert(converter = StatusConverter.class)
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @Column(length = 1024) // 최대 1024자까지 허용
