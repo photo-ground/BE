@@ -36,6 +36,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -169,7 +170,17 @@ public class ReservationService {
         List<Reservation> reservations = reservationRepository.findByCustomer_IdAndStatusNot(customerId,
                 Status.COMPLETED);
 
-        List<ReservationInfoDTO> dtos = reservations.stream().map(ReservationInfoDTO::from).toList();
+        List<Reservation> filteredReservations = reservations.stream().filter(reservation -> {
+                    if (reservation.getStatus() == Status.CANCELED) { //enum은 ==로 비교
+                        LocalDate updatedAt = reservation.getUpdatedAt().toLocalDate();
+                        return ChronoUnit.DAYS.between(updatedAt, LocalDate.now()) <= 7;
+                    } else {
+                        return true; //다른 status는 모두 통과
+                    }
+                })
+                .toList();
+
+        List<ReservationInfoDTO> dtos = filteredReservations.stream().map(ReservationInfoDTO::from).toList();
         return ReservationInfoListDTO.from(dtos);
     }
 
