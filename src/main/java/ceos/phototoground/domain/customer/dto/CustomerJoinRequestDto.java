@@ -2,10 +2,10 @@ package ceos.phototoground.domain.customer.dto;
 
 import ceos.phototoground.domain.customer.entity.Customer;
 import ceos.phototoground.domain.customer.entity.UserRole;
-import ceos.phototoground.global.exception.CustomException;
-import ceos.phototoground.global.exception.ErrorCode;
 import ceos.phototoground.domain.photographer.entity.Gender;
 import ceos.phototoground.domain.photographer.entity.MyUniv;
+import ceos.phototoground.global.exception.CustomException;
+import ceos.phototoground.global.exception.ErrorCode;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
@@ -56,7 +56,10 @@ public class CustomerJoinRequestDto {
         if (password == null || password.length() < 8) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD, "비밀번호는 최소 8자 이상이어야 합니다.");
         }
-        if (!password.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[!\"#$%&'()*+,\\-./:;<=>?@[\\\\]^_`{|}~]).{8,}$")) {
+        if (password.length() > 12) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD, "비밀번호는 최대 12자입니다.");
+        }
+        if (!password.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[\\$!@%&\\*]).{8,}$")) {
             throw new CustomException(ErrorCode.INVALID_PASSWORD, "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.");
         }
 
