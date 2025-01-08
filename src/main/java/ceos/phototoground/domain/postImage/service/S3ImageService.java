@@ -5,7 +5,10 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -13,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -46,9 +50,16 @@ public class S3ImageService {
 
             //upload
             try {
-                ObjectMetadata metadata = getObjectMetaData(file);
+                //이미지 리사이징
+                byte[] resizedImage = resizeImage(file, 800, 1200);
 
-                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, newFilename, file.getInputStream(),
+                //리사이징 된 이미지를 InputStream으로 변환 (PutObjectRequest 인자로 데이터를 스트림 형태로 전달해줘야 해서)
+                InputStream resizedInputStream = new ByteArrayInputStream(resizedImage);
+
+                //ObjectMetadata metadata = getObjectMetaData(file);
+                ObjectMetadata metadata = getObjectMetaData(file, resizedImage);
+
+                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, newFilename, resizedInputStream,
                         metadata)
                         .clone().withCannedAcl(CannedAccessControlList.PublicRead);
 
@@ -65,35 +76,6 @@ public class S3ImageService {
             throw new RuntimeException("S3 이미지 업로드 실패", ex);
         });
 
-    }
-
-    private void validateFileExtension(String filename) {
-        if (filename == null || filename.isEmpty()) {
-            throw new IllegalArgumentException("filename이 비었습니다.");
-        }
-
-        int lastDotIndex = filename.lastIndexOf(".");
-        String extension = filename.substring(lastDotIndex + 1);
-
-        List<String> extensionList = Arrays.asList("jpg", "jpeg", "png", "gif", "JPG", "JPEG", "PNG", "GIF");
-
-        if (!extensionList.contains(extension)) {
-            throw new IllegalArgumentException("파일 확장자 명이 잘못되었습니다.");
-        }
-    }
-
-    private ObjectMetadata getObjectMetaData(MultipartFile file) {
-        ObjectMetadata metadata = new ObjectMetadata();
-
-        System.out.println(file.getContentType());
-        int lastDotIndex = file.getOriginalFilename().lastIndexOf(".");
-        String extension = file.getOriginalFilename().substring(lastDotIndex + 1);
-
-        //contentType을 MIME 타입으로(image/jpeg, image/png,..)
-        metadata.setContentType("image/" + extension);
-        metadata.setContentLength(file.getSize());
-
-        return metadata;
     }
 
 
@@ -125,4 +107,46 @@ public class S3ImageService {
             throw new IllegalArgumentException("s3에서 이미지 삭제", e);
         }
     }
+
+
+    private void validateFileExtension(String filename) {
+        if (filename == null || filename.isEmpty()) {
+            throw new IllegalArgumentException("filename이 비었습니다.");
+        }
+
+        int lastDotIndex = filename.lastIndexOf(".");
+        String extension = filename.substring(lastDotIndex + 1);
+
+        List<String> extensionList = Arrays.asList("jpg", "jpeg", "png", "gif", "JPG", "JPEG", "PNG", "GIF");
+
+        if (!extensionList.contains(extension)) {
+            throw new IllegalArgumentException("파일 확장자 명이 잘못되었습니다.");
+        }
+    }
+
+    private ObjectMetadata getObjectMetaData(MultipartFile file, byte[] resizedImage) {
+        ObjectMetadata metadata = new ObjectMetadata();
+
+        System.out.println(file.getContentType());
+        int lastDotIndex = file.getOriginalFilename().lastIndexOf(".");
+        String extension = file.getOriginalFilename().substring(lastDotIndex + 1);
+
+        //contentType을 MIME 타입으로(image/jpeg, image/png,..)
+        metadata.setContentType("image/" + extension);
+        metadata.setContentLength(resizedImage.length);
+
+        return metadata;
+    }
+
+    private byte[] resizeImage(MultipartFile file, int width, int height) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        Thumbnails.of(file.getInputStream())
+                .size(width, height)
+                .outputFormat("jpg")
+                .toOutputStream(outputStream);
+
+        return outputStream.toByteArray();
+    }
+
 }

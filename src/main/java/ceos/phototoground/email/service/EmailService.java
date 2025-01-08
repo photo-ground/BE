@@ -2,6 +2,7 @@ package ceos.phototoground.email.service;
 
 import ceos.phototoground.domain.customer.dto.CustomerEmailDTO;
 import ceos.phototoground.domain.customer.dto.VerificationDTO;
+import ceos.phototoground.domain.customer.repository.CustomerRepository;
 import ceos.phototoground.email.dto.EmailDTO;
 import ceos.phototoground.global.exception.CustomException;
 import ceos.phototoground.global.exception.ErrorCode;
@@ -29,6 +30,7 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final RetryTemplate retryTemplate;
     private final RedisService redisService;
+    private final CustomerRepository customerRepository;
 
 
     // 계정
@@ -68,11 +70,16 @@ public class EmailService {
     // 인증번호 전송
     public void sendVerificationCode(CustomerEmailDTO customerEmailDTO) {
 
+        String email = customerEmailDTO.getEmail();
+
+        //이메일 중복 검사
+        existsByEmail(email);
+
         //인증번호 생성
         String authCode = createCode();
 
         EmailDTO emailDTO = new EmailDTO(authCode);
-        sendEmailWithRetry(emailDTO, customerEmailDTO.getEmail());
+        sendEmailWithRetry(emailDTO, email);
 
         // 이메일 인증 요청 시 인증 번호 Redis에 저장 ( key = "AuthCode " + Email / value = AuthCode )
         redisService.setValues(AUTH_CODE_PREFIX + customerEmailDTO.getEmail(),  // 재전송하면 기존 값 덮어씀
@@ -118,5 +125,13 @@ public class EmailService {
     public boolean isCertified(String email) {
         return redisService.hasKey(AUTH_CODE_PREFIX + email) && "true".equals(
                 redisService.getValues(AUTH_CODE_PREFIX + email));
+    }
+
+    // 이메일 중복검사
+    private void existsByEmail(String email) {
+        boolean isExits = customerRepository.existsByEmail(email);
+        if (isExits) {
+            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
     }
 }
