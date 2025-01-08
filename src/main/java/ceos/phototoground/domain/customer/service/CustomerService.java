@@ -1,8 +1,8 @@
 package ceos.phototoground.domain.customer.service;
 
+import ceos.phototoground.domain.customer.dto.CustomerJoinRequestDto;
 import ceos.phototoground.domain.customer.entity.Customer;
 import ceos.phototoground.domain.customer.entity.UserRole;
-import ceos.phototoground.domain.customer.dto.CustomerJoinRequestDto;
 import ceos.phototoground.domain.customer.repository.CustomerRepository;
 import ceos.phototoground.email.service.EmailService;
 import ceos.phototoground.global.exception.CustomException;
@@ -25,11 +25,7 @@ public class CustomerService {
         String email = dto.getEmail();
         String password = dto.getPassword();
 
-        // 회원 검증
-        boolean isExits = customerRepository.existsByEmail(email);
-        if (isExits) {
-            throw new CustomException(ErrorCode.EMAIL_ALREADY_EXISTS);
-        }
+        // 회원 검증 -> 이메일 인증에서
 
         // 비밀번호 유효성 검증 & 암호화
         dto.validatePassword();
@@ -47,7 +43,7 @@ public class CustomerService {
     public void deleteCustomer(Long customerId) {
         // 회원 정보 조회
         Customer customer = customerRepository.findById(customerId)
-                                              .orElseThrow(() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
 
         // 소프트 삭제 처리
         customer.delete();
@@ -57,4 +53,5 @@ public class CustomerService {
         return customerRepository.findById(customerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
     }
+    
 }
