@@ -15,8 +15,10 @@ public class CorsConfig {
 
         CorsConfiguration config = new CorsConfiguration();
 
+        //와일카드는 Pattern 사용해야 함
+        config.setAllowedOriginPatterns(List.of("https://*.photoground.pages.dev"));
         config.setAllowedOrigins(
-                List.of("http://localhost:3001", "http://localhost:3000", "https://*.photoground.pages.dev"));
+                List.of("http://localhost:3001", "http://localhost:3000"));
         config.setAllowedMethods(
                 List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")); //OPTIONS : Preflight 요청에 사용
         config.setAllowedHeaders(List.of("*"));
