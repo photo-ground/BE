@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +53,7 @@ public class S3ImageService {
             //upload
             try {
                 //이미지 리사이징
-                byte[] resizedImage = resizeImage(file, 800, 1200);
+                byte[] resizedImage = resizeImage(file, 750, 750);
 
                 //리사이징 된 이미지를 InputStream으로 변환 (PutObjectRequest 인자로 데이터를 스트림 형태로 전달해줘야 해서)
                 InputStream resizedInputStream = new ByteArrayInputStream(resizedImage);
@@ -138,11 +140,32 @@ public class S3ImageService {
         return metadata;
     }
 
-    private byte[] resizeImage(MultipartFile file, int width, int height) throws IOException {
+    private byte[] resizeImage(MultipartFile file, int targetWidth, int targetHeight) throws IOException {
+        //원본 이미지 가로, 세로 픽셀
+        BufferedImage originalImage = ImageIO.read(file.getInputStream());
+        int originalWidth = originalImage.getWidth();
+        int originalHeight = originalImage.getHeight();
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        Thumbnails.of(file.getInputStream())
-                .size(width, height)
+        //리사이징 안함
+        if (originalWidth <= 750 && originalHeight <= 750) {
+            ImageIO.write(originalImage, "jpg", outputStream);
+            return outputStream.toByteArray();
+        }
+
+        int resizedWidth = targetWidth;
+        int resizedHeight = targetHeight;
+
+        //리사이징 : width,height 중 큰 값 찾기 -> 짧은 걸 700px로 리사이징, 원본 이미지 비율 유지
+        if (originalWidth >= originalHeight) {
+            resizedWidth = (int) (originalWidth * 750.0 / originalHeight);
+        } else {
+            resizedHeight = (int) (originalHeight * 750.0 / originalWidth);
+        }
+
+        Thumbnails.of(originalImage)
+                .size(resizedWidth, resizedHeight)
                 .outputFormat("jpg")
                 .toOutputStream(outputStream);
 
