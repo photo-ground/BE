@@ -169,7 +169,7 @@ public class S3ImageService {
         int resizedWidth = targetWidth;
         int resizedHeight = targetHeight;
 
-        //리사이징 : width,height 중 큰 값 찾기 -> 짧은 걸 700px로 리사이징, 원본 이미지 비율 유지
+        //리사이징 : width,height 중 큰 값 찾기 -> 짧은 걸 750px로 리사이징, 원본 이미지 비율 유지
         if (originalWidth >= originalHeight) {
             resizedWidth = (int) (originalWidth * 750.0 / originalHeight);
         } else {
