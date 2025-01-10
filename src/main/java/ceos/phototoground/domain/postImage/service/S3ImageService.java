@@ -40,6 +40,9 @@ public class S3ImageService {
     @Value("${cloud.aws.cloudfront.domainName}")
     private String cloudFrontDomain;
 
+    @Value("${cloud.aws.cloudfront.domainUrl}")
+    private String cloudFrontDomainUrl;
+
     //버킷 내에 폴더 만들어서 분류해서 저장하게끔 구현(작가 프로필 이미지, 게시글 구분해서) -> 인자로 dir 받음
     @Async("ImageUploadExecutor")
     public CompletableFuture<String> saveImage(MultipartFile file, String dir) {
@@ -97,13 +100,12 @@ public class S3ImageService {
     public void deletePostImages(List<String> urls) {
 
         try {
-
-            int idx = urls.indexOf(bucketUrl);
+            int idx = urls.indexOf(cloudFrontDomainUrl);
             System.out.println(idx);
 
             for (int i = 0; i < urls.size(); i++) {
 
-                String filenameWithUUID = urls.get(i).substring(idx + bucketUrl.length() + 2);
+                String filenameWithUUID = urls.get(i).substring(idx + cloudFrontDomainUrl.length() + 2);
 
                 //한글, 특수문자 깨짐 방지
                 String decodedFileName = URLDecoder.decode(filenameWithUUID, StandardCharsets.UTF_8);
