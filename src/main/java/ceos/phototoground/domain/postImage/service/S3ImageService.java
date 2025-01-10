@@ -10,7 +10,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +37,9 @@ public class S3ImageService {
     @Value("${cloud.aws.s3.bucketUrl}")
     private String bucketUrl;
 
+    @Value("${cloud.aws.cloudfront.domainName}")
+    private String cloudFrontDomain;
+
     //버킷 내에 폴더 만들어서 분류해서 저장하게끔 구현(작가 프로필 이미지, 게시글 구분해서) -> 인자로 dir 받음
     @Async("ImageUploadExecutor")
     public CompletableFuture<String> saveImage(MultipartFile file, String dir) {
@@ -48,7 +53,8 @@ public class S3ImageService {
             validateFileExtension(file.getOriginalFilename());
 
             //파일 이름에 uuid붙여 unique하게 만들어줌
-            String newFilename = dir + "/" + UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+            String uuid = UUID.randomUUID().toString();
+            String newFilename = dir + "/" + uuid + "-" + file.getOriginalFilename();
 
             //upload
             try {
@@ -71,8 +77,14 @@ public class S3ImageService {
             }
 
             //url 반환
-            return amazonS3.getUrl(bucketName, newFilename).toString();
-
+            try {
+                String encodedOriginalFilename = URLEncoder.encode(file.getOriginalFilename(),
+                        StandardCharsets.UTF_8.name());
+                String newEncodedFilename = dir + "/" + uuid + "-" + encodedOriginalFilename;
+                return "https://" + cloudFrontDomain + "/" + newEncodedFilename;
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException("파일 이름을 인코딩 중 문제 발생", e);
+            }
         }).exceptionally(ex -> {
             // 비동기 작업 중 예외 발생한 경우를 처리
             throw new RuntimeException("S3 이미지 업로드 실패", ex);
