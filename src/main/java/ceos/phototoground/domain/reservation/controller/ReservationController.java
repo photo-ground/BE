@@ -1,6 +1,6 @@
 package ceos.phototoground.domain.reservation.controller;
 
-import ceos.phototoground.domain.reservation.dto.PaymentRequestDTO;
+import ceos.phototoground.domain.customer.dto.CustomUserDetails;
 import ceos.phototoground.domain.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.domain.reservation.dto.RequestReservationDTO;
 import ceos.phototoground.domain.reservation.dto.ReservationInfoListDTO;
@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -73,29 +74,44 @@ public class ReservationController {
         return ResponseEntity.ok(dto);
     }
 
-    // 입금 확인 요청
-    @PatchMapping("/reservation/{reservationId}/payment")
-    public ResponseEntity<ReservationStateDTO> sendPaymentRequest(@PathVariable("reservationId") Long reservationId,
-                                                                  @RequestBody PaymentRequestDTO paymentRequestDTO) {
-
-        ReservationStateDTO dto = reservationService.sendPaymentRequest(reservationId, paymentRequestDTO);
-        return ResponseEntity.ok(dto);
-    }
-
     // 예약 현황 조회
-    @GetMapping("/reservation/info/{customerId}")
-    public ResponseEntity<ReservationStatusInfo> getReservationStatus(@PathVariable Long customerId,
-                                                                      @RequestParam String yearMonth) {
+    @GetMapping("/reservation/info")
+    public ResponseEntity<ReservationStatusInfo> getReservationStatus(
+            @RequestParam String yearMonth, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
+        Long customerId = customUserDetails.getCustomer().getId();
         ReservationStatusInfo dto = reservationService.getReservationStatus(customerId, yearMonth);
         return ResponseEntity.ok(dto);
     }
 
     // 진행중인 스냅 전체 조회 (촬영완료 제외 단계)
-    @GetMapping("/reservation/active/{customerId}")
-    public ResponseEntity<ReservationInfoListDTO> getReservationList(@PathVariable Long customerId) {
+    @GetMapping("/reservation/active")
+    public ResponseEntity<ReservationInfoListDTO> getReservationList(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
+        Long customerId = customUserDetails.getCustomer().getId();
         ReservationInfoListDTO dto = reservationService.getReservationList(customerId);
+        return ResponseEntity.ok(dto);
+    }
+
+    // 지난 스냅 전체 조회 (촬영완료만)
+    @GetMapping("/reservation/complete")
+    public ResponseEntity<ReservationInfoListDTO> getCompleteReservationList(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        Long customerId = customUserDetails.getCustomer().getId();
+        ReservationInfoListDTO dto = reservationService.getCompleteReservationList(customerId);
+        return ResponseEntity.ok(dto);
+    }
+
+    // 입금 확인 요청하기
+    @PatchMapping("/reservation/{reservationId}/payment")
+    public ResponseEntity<ReservationStateDTO> requestCheckPayment(@PathVariable Long reservationId,
+                                                                   @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        Long customerId = customUserDetails.getCustomer().getId();
+        ReservationStateDTO dto = reservationService.requestCheckPayment(reservationId, customerId);
+
         return ResponseEntity.ok(dto);
     }
 

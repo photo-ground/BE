@@ -38,7 +38,7 @@ public class EmailService {
     private String username;
 
 
-    // 포그 이메일로 알림 보내기
+    // 이메일로 알림 보내기
     @Async
     public void sendEmailWithRetry(EmailDTO emailDTO, String email) {
         try {
