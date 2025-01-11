@@ -16,6 +16,7 @@ import lombok.Setter;
 public class ReviewResponseDto {
     private Long reviewId;
     private Long reservationId;
+    private String photographerProfile;
     private String photographerName;
     private String content;
     private int score;
@@ -26,6 +27,10 @@ public class ReviewResponseDto {
                                 .reviewId(review.getId())
                                 .reservationId(review.getReservation()
                                                      .getId())
+                                .photographerProfile(review.getReservation()
+                                                           .getPhotographer()
+                                                           .getPhotoProfile()
+                                                           .getProfileUrl())
                                 .photographerName(review.getReservation()
                                                         .getPhotographer()
                                                         .getPhotoProfile()
