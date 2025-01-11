@@ -46,28 +46,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
-        /*
-        //cors 설정
-        http.cors((corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-            @Override
-            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-
-                CorsConfiguration configuration = new CorsConfiguration();
-
-                configuration.setAllowedOrigins(
-                        Arrays.asList("http://localhost:3000", "http://localhost:3031"));
-                configuration.setAllowedMethods(Collections.singletonList("*"));
-                configuration.setAllowCredentials(true);
-                configuration.setAllowedHeaders(Collections.singletonList("*"));
-                configuration.setMaxAge(3600L);
-
-                configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
-
-                return configuration;
-            }
-        })));
-        */
+        
         // CORS 활성화
         http.cors(c -> c.configurationSource(new CorsConfig().corsConfigurationSource()));
 
