@@ -75,18 +75,21 @@ public class ReservationController {
     }
 
     // 예약 현황 조회
-    @GetMapping("/reservation/info/{customerId}")
-    public ResponseEntity<ReservationStatusInfo> getReservationStatus(@PathVariable Long customerId,
-                                                                      @RequestParam String yearMonth) {
+    @GetMapping("/reservation/info")
+    public ResponseEntity<ReservationStatusInfo> getReservationStatus(
+            @RequestParam String yearMonth, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
+        Long customerId = customUserDetails.getCustomer().getId();
         ReservationStatusInfo dto = reservationService.getReservationStatus(customerId, yearMonth);
         return ResponseEntity.ok(dto);
     }
 
     // 진행중인 스냅 전체 조회 (촬영완료 제외 단계)
-    @GetMapping("/reservation/active/{customerId}")
-    public ResponseEntity<ReservationInfoListDTO> getReservationList(@PathVariable Long customerId) {
+    @GetMapping("/reservation/active")
+    public ResponseEntity<ReservationInfoListDTO> getReservationList(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
+        Long customerId = customUserDetails.getCustomer().getId();
         ReservationInfoListDTO dto = reservationService.getReservationList(customerId);
         return ResponseEntity.ok(dto);
     }
