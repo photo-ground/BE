@@ -28,4 +28,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             "AND r.status <> :status")
     List<Reservation> findByCustomer_IdAndStatusNot(@Param("customerId") Long customerId,
                                                     @Param("status") Status status);
+
+    
+    List<Reservation> findByCustomer_IdAndStatus(Long customerId, Status status);
 }

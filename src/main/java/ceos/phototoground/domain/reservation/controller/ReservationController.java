@@ -1,5 +1,6 @@
 package ceos.phototoground.domain.reservation.controller;
 
+import ceos.phototoground.domain.customer.dto.CustomUserDetails;
 import ceos.phototoground.domain.reservation.dto.PaymentRequestDTO;
 import ceos.phototoground.domain.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.domain.reservation.dto.RequestReservationDTO;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -96,6 +98,16 @@ public class ReservationController {
     public ResponseEntity<ReservationInfoListDTO> getReservationList(@PathVariable Long customerId) {
 
         ReservationInfoListDTO dto = reservationService.getReservationList(customerId);
+        return ResponseEntity.ok(dto);
+    }
+
+    // 지난 스냅 전체 조회 (촬영완료만)
+    @GetMapping("/reservation/complete")
+    public ResponseEntity<ReservationInfoListDTO> getCompleteReservationList(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        Long customerId = customUserDetails.getCustomer().getId();
+        ReservationInfoListDTO dto = reservationService.getCompleteReservationList(customerId);
         return ResponseEntity.ok(dto);
     }
 

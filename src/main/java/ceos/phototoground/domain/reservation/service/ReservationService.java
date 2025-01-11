@@ -185,6 +185,16 @@ public class ReservationService {
     }
 
 
+    // 지난 스냅 전체 조회 (촬영완료만)
+    public ReservationInfoListDTO getCompleteReservationList(Long customerId) {
+
+        List<Reservation> reservations = reservationRepository.findByCustomer_IdAndStatus(customerId, Status.COMPLETED);
+
+        List<ReservationInfoDTO> dtos = reservations.stream().map(ReservationInfoDTO::from).toList();
+        return ReservationInfoListDTO.from(dtos);
+    }
+
+
     // 유효한 타입인지 확인
     private void validateYearMonth(String yearMonth) {
         try {
