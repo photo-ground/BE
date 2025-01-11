@@ -10,7 +10,6 @@ import ceos.phototoground.domain.photoProfile.service.PhotoProfileService;
 import ceos.phototoground.domain.photographer.entity.Photographer;
 import ceos.phototoground.domain.photographer.service.PhotographerService;
 import ceos.phototoground.domain.reservation.dto.DateScheduleDTO;
-import ceos.phototoground.domain.reservation.dto.PaymentRequestDTO;
 import ceos.phototoground.domain.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.domain.reservation.dto.RequestReservationDTO;
 import ceos.phototoground.domain.reservation.dto.ReservationInfoDTO;
@@ -131,19 +130,6 @@ public class ReservationService {
     }
 
 
-    //예약 입금 확인 요청
-    @Transactional
-    public ReservationStateDTO sendPaymentRequest(Long reservationId, PaymentRequestDTO paymentRequestDTO) {
-
-        Long payerId = paymentRequestDTO.getPayerId();
-        Reservation reservation = reservationRepository.findByCustomer_Id(payerId);
-
-        reservation.changeStatus(Status.PAYMENT_PENDING);
-
-        return ReservationStateDTO.of(reservation.getId(), "결제확인중");
-    }
-
-
     //예약 현황 조회
     public ReservationStatusInfo getReservationStatus(Long customerId, String yearMonth) {
 
@@ -195,6 +181,22 @@ public class ReservationService {
     }
 
 
+    @Transactional
+    // 입금 확인 요청
+    public ReservationStateDTO requestCheckPayment(Long reservationId, Long customerId) {
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+
+        reservation.changeStatus(Status.PAYMENT_PENDING);
+
+        Customer customer = customerService.findById(customerId);
+        emailService.sendEmailWithRetry(new EmailDTO(customer, reservationId), username);
+
+        return ReservationStateDTO.of(reservation.getId(), "결제확인중");
+
+    }
+
     // 유효한 타입인지 확인
     private void validateYearMonth(String yearMonth) {
         try {
@@ -204,6 +206,5 @@ public class ReservationService {
             throw new CustomException(ErrorCode.NOT_VALID_TYPE_YEAR_MONTH);
         }
     }
-
 
 }
