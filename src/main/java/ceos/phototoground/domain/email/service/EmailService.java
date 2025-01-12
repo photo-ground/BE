@@ -1,12 +1,12 @@
-package ceos.phototoground.email.service;
+package ceos.phototoground.domain.email.service;
 
 import ceos.phototoground.domain.customer.dto.CustomerEmailDTO;
 import ceos.phototoground.domain.customer.dto.VerificationDTO;
 import ceos.phototoground.domain.customer.repository.CustomerRepository;
-import ceos.phototoground.email.dto.EmailDTO;
+import ceos.phototoground.domain.email.dto.EmailDTO;
 import ceos.phototoground.global.exception.CustomException;
 import ceos.phototoground.global.exception.ErrorCode;
-import ceos.phototoground.redis.service.RedisService;
+import ceos.phototoground.global.redis.RedisService;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.Duration;

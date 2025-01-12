@@ -1,4 +1,4 @@
-package ceos.phototoground.email.dto;
+package ceos.phototoground.domain.email.dto;
 
 import ceos.phototoground.domain.customer.entity.Customer;
 import ceos.phototoground.domain.photographer.entity.Photographer;

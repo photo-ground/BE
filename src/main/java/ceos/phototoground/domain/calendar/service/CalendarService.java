@@ -5,6 +5,7 @@ import ceos.phototoground.domain.calendar.entity.PhotographerCalendar;
 import ceos.phototoground.domain.calendar.repository.CalendarRepository;
 import ceos.phototoground.global.exception.CustomException;
 import ceos.phototoground.global.exception.ErrorCode;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class CalendarService {
 
     private final CalendarRepository calendarRepository;
+    private final PhotographerCalendarService photographerCalendarService;
+
 
     public Calendar findById(Long calendarId) {
 
@@ -37,5 +40,13 @@ public class CalendarService {
         return calendarList.stream()
                 .map(li -> li.getDate().format(formatter))
                 .toList();
+    }
+
+    @Transactional
+    public void deleteOldData() {
+        LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+
+        photographerCalendarService.deleteByCalendar_DateBefore(oneMonthAgo);
+        calendarRepository.deleteByDateBefore(oneMonthAgo);
     }
 }

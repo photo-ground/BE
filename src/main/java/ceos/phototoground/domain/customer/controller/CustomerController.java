@@ -5,7 +5,7 @@ import ceos.phototoground.domain.customer.dto.CustomerEmailDTO;
 import ceos.phototoground.domain.customer.dto.CustomerJoinRequestDto;
 import ceos.phototoground.domain.customer.dto.VerificationDTO;
 import ceos.phototoground.domain.customer.service.CustomerService;
-import ceos.phototoground.email.service.EmailService;
+import ceos.phototoground.domain.email.service.EmailService;
 import ceos.phototoground.global.dto.SuccessResponseDto;
 import jakarta.validation.Valid;
 import java.util.HashMap;
@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +33,8 @@ public class CustomerController {
     private String username;
 
     @PostMapping("/join")
-    public ResponseEntity<SuccessResponseDto<String>> joinProcess(@Valid @RequestBody CustomerJoinRequestDto customerJoinRequestDto) {
+    public ResponseEntity<SuccessResponseDto<String>> joinProcess(
+            @Valid @RequestBody CustomerJoinRequestDto customerJoinRequestDto) {
         customerService.joinCustomer(customerJoinRequestDto);
 
         return ResponseEntity.ok(
@@ -47,7 +47,7 @@ public class CustomerController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         Long customerId = userDetails.getCustomer()
-                                     .getId();
+                .getId();
         customerService.deleteCustomer(customerId);
 
         return ResponseEntity.ok(
@@ -78,7 +78,7 @@ public class CustomerController {
         } else {
             response.put("message", "인증이 실패했습니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                 .body(response); // 401 Unauthorized
+                    .body(response); // 401 Unauthorized
         }
     }
 }
