@@ -20,4 +20,6 @@ public interface PhotographerCalendarRepository extends JpaRepository<Photograph
     List<PhotographerCalendar> findByPhotographer_IdAndDateBetween(@Param("photographerId") Long photographerId,
                                                                    @Param("now") LocalDate now,
                                                                    @Param("endDate") LocalDate endDate);
+
+    void deleteByCalendar_DateBefore(LocalDate oneMonthAgo);
 }

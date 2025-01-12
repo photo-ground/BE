@@ -22,4 +22,9 @@ public class PhotographerCalendarService {
 
         return photographerCalendarRepository.findByPhotographer_IdAndDateBetween(photographerId, now, endDate);
     }
+
+    @Transactional
+    public void deleteByCalendar_DateBefore(LocalDate oneMonthAgo) {
+        photographerCalendarRepository.deleteByCalendar_DateBefore(oneMonthAgo);
+    }
 }
