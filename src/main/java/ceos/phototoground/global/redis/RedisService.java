@@ -1,4 +1,4 @@
-package ceos.phototoground.redis.service;
+package ceos.phototoground.global.redis;
 
 import java.time.Duration;
 import java.util.Map;

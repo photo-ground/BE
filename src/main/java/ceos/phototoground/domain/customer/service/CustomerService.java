@@ -4,7 +4,7 @@ import ceos.phototoground.domain.customer.dto.CustomerJoinRequestDto;
 import ceos.phototoground.domain.customer.entity.Customer;
 import ceos.phototoground.domain.customer.entity.UserRole;
 import ceos.phototoground.domain.customer.repository.CustomerRepository;
-import ceos.phototoground.email.service.EmailService;
+import ceos.phototoground.domain.email.service.EmailService;
 import ceos.phototoground.global.exception.CustomException;
 import ceos.phototoground.global.exception.ErrorCode;
 import jakarta.transaction.Transactional;
@@ -53,5 +53,5 @@ public class CustomerService {
         return customerRepository.findById(customerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
     }
-    
+
 }
