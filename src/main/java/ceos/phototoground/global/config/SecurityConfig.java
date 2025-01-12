@@ -46,7 +46,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        
+
         // CORS 활성화
         http.cors(c -> c.configurationSource(new CorsConfig().corsConfigurationSource()));
 
@@ -63,7 +63,11 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/login", "/", "/api/customer/join", "/api/customer/emails/request",
                         "/api/customer/emails/verify", "/api/photographer/{photographerId}/review",
-                        "api/review/{reviewId}").permitAll() // 해당 경로는 모든 사용자가 접근 가능
+                        "api/review/{reviewId}", "/api/spot", "/api/photographer", "/api/photographer/search",
+                        "/api/photographer/{photographerId}/intro", "/api/photographer/{photographerId}/bottom",
+                        "/api/photographer/active",
+                        "/api/posts/{postId}", "/api/posts")
+                .permitAll() // 해당 경로는 모든 사용자가 접근 가능
                 .requestMatchers("/admin").hasRole("ADMIN") // admin 경로는 해당 권한을 가진 사용자만 접근 가능.
                 .requestMatchers("/api/reissue").permitAll() // 리프레시 토큰은 모든 사용자가 접근 가능
                 .anyRequest().authenticated()); // 이외의 남은 경로는 로그인한 사용자만 접근 가능
