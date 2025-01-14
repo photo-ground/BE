@@ -180,6 +180,7 @@ public class S3ImageService {
 
         Thumbnails.of(originalImage)
                 .size(resizedWidth, resizedHeight)
+                .outputQuality(0.9) // 품질 낮춰 메모리 사용 감소
                 .outputFormat("jpg")
                 .toOutputStream(outputStream);
 
