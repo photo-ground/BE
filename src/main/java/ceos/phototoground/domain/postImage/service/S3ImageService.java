@@ -60,34 +60,28 @@ public class S3ImageService {
             String newFilename = dir + "/" + uuid + "-" + file.getOriginalFilename();
 
             //upload
-            try {
+            try (InputStream inputStream = file.getInputStream()) { //메모리 부담 덜기 위해 inputStream으로
                 //이미지 리사이징
-                byte[] resizedImage = resizeImage(file, 750, 750);
+                byte[] resizedImage = resizeImage(inputStream, 750, 750);
 
                 //리사이징 된 이미지를 InputStream으로 변환 (PutObjectRequest 인자로 데이터를 스트림 형태로 전달해줘야 해서)
-                InputStream resizedInputStream = new ByteArrayInputStream(resizedImage);
+                try (InputStream resizedInputStream = new ByteArrayInputStream(resizedImage)) {
+                    ObjectMetadata metadata = getObjectMetaData(file, resizedImage);
 
-                //ObjectMetadata metadata = getObjectMetaData(file);
-                ObjectMetadata metadata = getObjectMetaData(file, resizedImage);
+                    PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, newFilename,
+                            resizedInputStream,
+                            metadata)
+                            .clone().withCannedAcl(CannedAccessControlList.PublicRead);
 
-                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, newFilename, resizedInputStream,
-                        metadata)
-                        .clone().withCannedAcl(CannedAccessControlList.PublicRead);
-
-                amazonS3.putObject(putObjectRequest);
+                    amazonS3.putObject(putObjectRequest);
+                }
             } catch (IOException e) {
                 throw new RuntimeException("이미지를 s3에 업로드 하는 중에 문제 발생", e);
             }
 
             //url 반환
-            try {
-                String encodedOriginalFilename = URLEncoder.encode(file.getOriginalFilename(),
-                        StandardCharsets.UTF_8.name());
-                String newEncodedFilename = dir + "/" + uuid + "-" + encodedOriginalFilename;
-                return "https://" + cloudFrontDomain + "/" + newEncodedFilename;
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException("파일 이름을 인코딩 중 문제 발생", e);
-            }
+            return generateFileUrl(dir, uuid, file.getOriginalFilename());
+
         }).exceptionally(ex -> {
             // 비동기 작업 중 예외 발생한 경우를 처리
             throw new RuntimeException("S3 이미지 업로드 실패", ex);
@@ -154,9 +148,9 @@ public class S3ImageService {
         return metadata;
     }
 
-    private byte[] resizeImage(MultipartFile file, int targetWidth, int targetHeight) throws IOException {
+    private byte[] resizeImage(InputStream inputStream, int targetWidth, int targetHeight) throws IOException {
         //원본 이미지 가로, 세로 픽셀
-        BufferedImage originalImage = ImageIO.read(file.getInputStream());
+        BufferedImage originalImage = ImageIO.read(inputStream);
         int originalWidth = originalImage.getWidth();
         int originalHeight = originalImage.getHeight();
 
@@ -180,10 +174,22 @@ public class S3ImageService {
 
         Thumbnails.of(originalImage)
                 .size(resizedWidth, resizedHeight)
+                .outputQuality(0.9) // 품질 낮춰 메모리 사용 감소
                 .outputFormat("jpg")
                 .toOutputStream(outputStream);
 
         return outputStream.toByteArray();
+    }
+
+    private String generateFileUrl(String dir, String uuid, String originalFilename) {
+        try {
+            String encodedOriginalFilename = URLEncoder.encode(originalFilename,
+                    StandardCharsets.UTF_8.name());
+            String newEncodedFilename = dir + "/" + uuid + "-" + encodedOriginalFilename;
+            return "https://" + cloudFrontDomain + "/" + newEncodedFilename;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("파일 이름을 인코딩 중 문제 발생", e);
+        }
     }
 
 }
