@@ -14,4 +14,5 @@ ENV SPRING_PROFILES_ACTIVE=prod
 ENV JAVA_OPTS="-Xms128m -Xmx300m"
 
 # 5. 애플리케이션 실행
-ENTRYPOINT ["java", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "${JAVA_OPTS}", "-jar", "app.jar"]
+#ENTRYPOINT ["java", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} -jar app.jar"]
