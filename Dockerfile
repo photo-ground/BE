@@ -10,5 +10,8 @@ COPY ${JAR_FILE} app.jar
 # 4. 환경 변수로 Spring Profile 설정 (기본값: local)
 ENV SPRING_PROFILES_ACTIVE=prod
 
+# 5. JVM 힙 메모리 설정 (기본값 추가)
+ENV JAVA_OPTS="-Xms128m -Xmx300m"
+
 # 5. 애플리케이션 실행
-ENTRYPOINT ["java", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "${JAVA_OPTS}", "-jar", "app.jar"]
