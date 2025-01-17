@@ -4,21 +4,21 @@ import ceos.phototoground.domain.photoProfile.entity.PhotoProfile;
 import ceos.phototoground.domain.photoProfile.entity.QPhotoProfile;
 import ceos.phototoground.domain.photoProfile.service.PhotoProfileService;
 import ceos.phototoground.domain.photoProfile.service.PhotoStyleService;
-import ceos.phototoground.domain.photographer.entity.Photographer;
 import ceos.phototoground.domain.photographer.dto.PhotographerBottomDTO;
-import ceos.phototoground.domain.photographer.dto.PhotographerResponseDTO;
-import ceos.phototoground.domain.photographer.entity.QPhotographer;
-import ceos.phototoground.domain.photographer.repository.PhotographerRepository;
-import ceos.phototoground.global.exception.CustomException;
-import ceos.phototoground.global.exception.ErrorCode;
 import ceos.phototoground.domain.photographer.dto.PhotographerIntroDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerListDTO;
+import ceos.phototoground.domain.photographer.dto.PhotographerResponseDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerSearchListDTO;
-import ceos.phototoground.domain.post.entity.Post;
+import ceos.phototoground.domain.photographer.entity.Photographer;
+import ceos.phototoground.domain.photographer.entity.QPhotographer;
+import ceos.phototoground.domain.photographer.repository.PhotographerRepository;
 import ceos.phototoground.domain.post.dto.ProfilePostResponseListDTO;
+import ceos.phototoground.domain.post.entity.Post;
 import ceos.phototoground.domain.post.service.PostService;
 import ceos.phototoground.domain.univ.entity.PhotographerUniv;
 import ceos.phototoground.domain.univ.service.PhotographerUnivService;
+import ceos.phototoground.global.exception.CustomException;
+import ceos.phototoground.global.exception.ErrorCode;
 import com.querydsl.core.Tuple;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +42,7 @@ public class PhotographerService {
     @Transactional
     public Photographer findPhotographerById(Long photographerId) {
         return photographerRepository.findById(photographerId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 사진작가는 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.PHOTOGRAPHER_NOT_FOUND));
     }
 
 
@@ -101,7 +101,7 @@ public class PhotographerService {
     public PhotographerIntroDTO getPhotographerIntro(Long photographerId) {
 
         Photographer photographer = photographerRepository.findById(photographerId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 작가가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.PHOTOGRAPHER_NOT_FOUND));
 
         PhotoProfile photoProfile = photographer.getPhotoProfile();
 
@@ -111,21 +111,19 @@ public class PhotographerService {
                 .map(photographerUniv -> photographerUniv.getUniv().getName())
                 .toList();
 
-        return PhotographerIntroDTO.of(photographer, photoProfile, univNameList);
+        List<String> styleList = photoStyleService.findByPhotoProfile(photoProfile);
+
+        return PhotographerIntroDTO.of(photographer, photoProfile, univNameList, styleList);
     }
 
     public PhotographerBottomDTO getPhotographerBottom(Long photographerId, Long cursor, int size) {
 
         Photographer photographer = photographerRepository.findById(photographerId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 작가가 존재하지 않습니다."));
-
-        PhotoProfile photoProfile = photographer.getPhotoProfile();
-
-        List<String> styleList = photoStyleService.findByPhotoProfile(photoProfile);
+                .orElseThrow(() -> new CustomException(ErrorCode.PHOTOGRAPHER_NOT_FOUND));
 
         ProfilePostResponseListDTO postList = postService.findProfilePostWithNoOffset(photographerId, cursor, size);
 
-        return PhotographerBottomDTO.of(photoProfile.getIntroduction(), photoProfile.getScore(), styleList, postList);
+        return PhotographerBottomDTO.from(postList);
     }
 
     // 활발히 활동하는 작가 리스트 져오기
