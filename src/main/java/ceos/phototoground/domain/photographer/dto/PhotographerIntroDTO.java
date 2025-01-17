@@ -19,9 +19,13 @@ public class PhotographerIntroDTO {
     private List<String> univ; // 촬영가능 학교
     private String profileUrl;
 
-    
+    private String introduction;
+    private Long score;
+    private List<String> styleList;
+
+
     public static PhotographerIntroDTO of(Photographer photographer, PhotoProfile photoProfile,
-                                          List<String> univNameList) {
+                                          List<String> univNameList, List<String> styleList) {
         return PhotographerIntroDTO.builder()
                 .photographerName(photoProfile.getNickname())
                 .age(LocalDate.now().getYear() - photographer.getBornYear())
@@ -31,6 +35,9 @@ public class PhotographerIntroDTO {
                 .addPrice(photoProfile.getAddPrice())
                 .univ(univNameList)
                 .profileUrl(photoProfile.getProfileUrl())
+                .introduction(photoProfile.getIntroduction())
+                .score(photoProfile.getScore())
+                .styleList(styleList)
                 .build();
     }
 }
