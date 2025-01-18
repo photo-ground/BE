@@ -7,10 +7,10 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum MyUniv {
 
-    YONSEI("연세"),
-    EWHA("이화"),
-    SOGANG("서강"),
-    HONGIK("홍익"),
+    YONSEI("연세대학교"),
+    EWHA("이화여자대학교"),
+    SOGANG("서강대학교"),
+    HONGIK("홍익대학교"),
     NONE("선택안함");
 
     private final String name; // 한국어 이름

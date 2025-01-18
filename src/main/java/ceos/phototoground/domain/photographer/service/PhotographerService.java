@@ -1,5 +1,8 @@
 package ceos.phototoground.domain.photographer.service;
 
+import ceos.phototoground.domain.customer.dto.CustomUserDetails;
+import ceos.phototoground.domain.follow.entity.Follow;
+import ceos.phototoground.domain.follow.service.FollowService;
 import ceos.phototoground.domain.photoProfile.entity.PhotoProfile;
 import ceos.phototoground.domain.photoProfile.entity.QPhotoProfile;
 import ceos.phototoground.domain.photoProfile.service.PhotoProfileService;
@@ -38,6 +41,8 @@ public class PhotographerService {
     private final PhotographerUnivService photographerUnivService;
     private final PhotoStyleService photoStyleService;
     private final PostService postService;
+    private final FollowService followService;
+
 
     @Transactional
     public Photographer findPhotographerById(Long photographerId) {
@@ -98,6 +103,7 @@ public class PhotographerService {
 
     }
 
+    /*
     public PhotographerIntroDTO getPhotographerIntro(Long photographerId) {
 
         Photographer photographer = photographerRepository.findById(photographerId)
@@ -115,6 +121,36 @@ public class PhotographerService {
 
         return PhotographerIntroDTO.of(photographer, photoProfile, univNameList, styleList);
     }
+    */
+
+    public PhotographerIntroDTO getPhotographerIntro(Long photographerId, CustomUserDetails customUserDetails) {
+
+        // 로그인 안 한 사용자
+        boolean isFollowing = false;
+
+        // 로그인 한 사용자
+        if (customUserDetails != null) {
+            Long customerId = customUserDetails.getCustomer().getId();
+            Follow follow = followService.findByCustomerAndPhotographer_Id(customerId, photographerId);
+            isFollowing = follow != null;
+        }
+
+        Photographer photographer = photographerRepository.findById(photographerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PHOTOGRAPHER_NOT_FOUND));
+
+        PhotoProfile photoProfile = photographer.getPhotoProfile();
+
+        List<PhotographerUniv> photographerUnivList = photographerUnivService.findByPhotographer_Id(photographerId);
+
+        List<String> univNameList = photographerUnivList.stream()
+                .map(photographerUniv -> photographerUniv.getUniv().getName())
+                .toList();
+
+        List<String> styleList = photoStyleService.findByPhotoProfile(photoProfile);
+
+        return PhotographerIntroDTO.of(photographer, photoProfile, univNameList, styleList, isFollowing);
+    }
+
 
     public PhotographerBottomDTO getPhotographerBottom(Long photographerId, Long cursor, int size) {
 
