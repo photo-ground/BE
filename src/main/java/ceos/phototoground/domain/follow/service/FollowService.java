@@ -25,9 +25,9 @@ public class FollowService {
     public void followPhotographer(Customer customer, Long photographerId) {
         // 작가 정보 가져오기
         Photographer photographer = photographerRepository.findById(photographerId)
-                                                          .orElseThrow(() -> new CustomException(
-                                                                  ErrorCode.PHOTOGRAPHER_NOT_FOUND
-                                                          ));
+                .orElseThrow(() -> new CustomException(
+                        ErrorCode.PHOTOGRAPHER_NOT_FOUND
+                ));
 
         // 이미 팔로우한 경우 중복 방지
         boolean alreadyFollowed = followRepository.existsByCustomerAndPhotographer(customer, photographer);
@@ -38,9 +38,9 @@ public class FollowService {
 
         // 팔로우 생성 및 저장
         Follow follow = Follow.builder()
-                              .customer(customer)
-                              .photographer(photographer)
-                              .build();
+                .customer(customer)
+                .photographer(photographer)
+                .build();
 
         followRepository.save(follow);
     }
@@ -49,13 +49,13 @@ public class FollowService {
     public void unfollowPhotographer(Customer customer, Long photographerId) {
         // 작가 정보 가져오기
         Photographer photographer = photographerRepository.findById(photographerId)
-                                                          .orElseThrow(() -> new CustomException(
-                                                                  ErrorCode.PHOTOGRAPHER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(
+                        ErrorCode.PHOTOGRAPHER_NOT_FOUND));
 
         // 팔로우 관계 확인
         Follow follow = followRepository.findByCustomerAndPhotographer(customer, photographer)
-                                        .orElseThrow(
-                                                () -> new CustomException(ErrorCode.FOLLOW_RELATIONSHIP_NOT_FOUND));
+                .orElseThrow(
+                        () -> new CustomException(ErrorCode.FOLLOW_RELATIONSHIP_NOT_FOUND));
 
         // 팔로우 취소
         followRepository.delete(follow);
@@ -64,10 +64,14 @@ public class FollowService {
     public List<FollowResponseDto> getAllFollowedPhotographers(Customer customer) {
         // 팔로우 관계에서 Photographer 리스트 추출
         return followRepository.findByCustomer(customer)
-                               .stream()
-                               .map(Follow::getPhotographer)
-                               .map(FollowResponseDto::from)
-                               .collect(Collectors.toList());
+                .stream()
+                .map(Follow::getPhotographer)
+                .map(FollowResponseDto::from)
+                .collect(Collectors.toList());
     }
 
+    public Follow findByCustomerAndPhotographer_Id(Long customerId, Long photographerId) {
+
+        return followRepository.findByCustomer_IdAndPhotographer_Id(customerId, photographerId);
+    }
 }

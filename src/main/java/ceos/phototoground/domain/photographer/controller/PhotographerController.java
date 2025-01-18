@@ -1,6 +1,7 @@
 package ceos.phototoground.domain.photographer.controller;
 
 
+import ceos.phototoground.domain.customer.dto.CustomUserDetails;
 import ceos.phototoground.domain.photographer.dto.PhotographerBottomDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerIntroDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerListDTO;
@@ -10,6 +11,7 @@ import ceos.phototoground.domain.photographer.service.PhotographerService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +51,7 @@ public class PhotographerController {
 
     }
 
+    /*
     // 특정 작가 상단부 조회
     @GetMapping("/{photographerId}/intro")
     public ResponseEntity<PhotographerIntroDTO> getPhotographerIntro(@PathVariable Long photographerId) {
@@ -57,6 +60,18 @@ public class PhotographerController {
 
         return ResponseEntity.ok(dto);
     }
+    */
+
+    // 특정 작가 상단부 조회
+    @GetMapping("/{photographerId}/intro")
+    public ResponseEntity<PhotographerIntroDTO> getPhotographerIntro(@PathVariable Long photographerId,
+                                                                     @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        PhotographerIntroDTO dto = photographerService.getPhotographerIntro(photographerId, customUserDetails);
+
+        return ResponseEntity.ok(dto);
+    }
+
 
     // 특정 작가 하단부 조회
     @GetMapping("/{photographerId}/bottom")
