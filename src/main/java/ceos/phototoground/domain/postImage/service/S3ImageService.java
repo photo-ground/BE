@@ -5,11 +5,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -18,9 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
-import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -43,6 +37,9 @@ public class S3ImageService {
     @Value("${cloud.aws.cloudfront.domainUrl}")
     private String cloudFrontDomainUrl;
 
+    @Value("${cloud.aws.s3.resizedBucket}")
+    private String resizedBucket;
+
     //버킷 내에 폴더 만들어서 분류해서 저장하게끔 구현(작가 프로필 이미지, 게시글 구분해서) -> 인자로 dir 받음
     @Async("ImageUploadExecutor")
     public CompletableFuture<String> saveImage(MultipartFile file, String dir) {
@@ -61,16 +58,9 @@ public class S3ImageService {
 
             //upload
             try {
-                //이미지 리사이징
-                byte[] resizedImage = resizeImage(file, 750, 750);
+                ObjectMetadata metadata = getObjectMetaData(file);
 
-                //리사이징 된 이미지를 InputStream으로 변환 (PutObjectRequest 인자로 데이터를 스트림 형태로 전달해줘야 해서)
-                InputStream resizedInputStream = new ByteArrayInputStream(resizedImage);
-
-                //ObjectMetadata metadata = getObjectMetaData(file);
-                ObjectMetadata metadata = getObjectMetaData(file, resizedImage);
-
-                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, newFilename, resizedInputStream,
+                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, newFilename, file.getInputStream(),
                         metadata)
                         .clone().withCannedAcl(CannedAccessControlList.PublicRead);
 
@@ -80,14 +70,8 @@ public class S3ImageService {
             }
 
             //url 반환
-            try {
-                String encodedOriginalFilename = URLEncoder.encode(file.getOriginalFilename(),
-                        StandardCharsets.UTF_8.name());
-                String newEncodedFilename = dir + "/" + uuid + "-" + encodedOriginalFilename;
-                return "https://" + cloudFrontDomain + "/" + newEncodedFilename;
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException("파일 이름을 인코딩 중 문제 발생", e);
-            }
+            return generateFileUrl(dir, uuid, file.getOriginalFilename());
+
         }).exceptionally(ex -> {
             // 비동기 작업 중 예외 발생한 경우를 처리
             throw new RuntimeException("S3 이미지 업로드 실패", ex);
@@ -118,6 +102,12 @@ public class S3ImageService {
                 } else {
                     System.out.println("대상없음");
                 }
+                if (amazonS3.doesObjectExist(resizedBucket, decodedFileName)) {
+                    DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(resizedBucket, decodedFileName);
+                    amazonS3.deleteObject(deleteObjectRequest);
+                } else {
+                    System.out.println("리사이징 버킷에 대상없음");
+                }
             }
         } catch (Exception e) {
             throw new IllegalArgumentException("s3에서 이미지 삭제", e);
@@ -140,7 +130,7 @@ public class S3ImageService {
         }
     }
 
-    private ObjectMetadata getObjectMetaData(MultipartFile file, byte[] resizedImage) {
+    private ObjectMetadata getObjectMetaData(MultipartFile file) {
         ObjectMetadata metadata = new ObjectMetadata();
 
         System.out.println(file.getContentType());
@@ -149,41 +139,21 @@ public class S3ImageService {
 
         //contentType을 MIME 타입으로(image/jpeg, image/png,..)
         metadata.setContentType("image/" + extension);
-        metadata.setContentLength(resizedImage.length);
+        metadata.setContentLength(file.getSize());
 
         return metadata;
     }
 
-    private byte[] resizeImage(MultipartFile file, int targetWidth, int targetHeight) throws IOException {
-        //원본 이미지 가로, 세로 픽셀
-        BufferedImage originalImage = ImageIO.read(file.getInputStream());
-        int originalWidth = originalImage.getWidth();
-        int originalHeight = originalImage.getHeight();
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        //리사이징 안함
-        if (originalWidth <= 750 && originalHeight <= 750) {
-            ImageIO.write(originalImage, "jpg", outputStream);
-            return outputStream.toByteArray();
+    private String generateFileUrl(String dir, String uuid, String originalFilename) {
+        try {
+            String encodedOriginalFilename = URLEncoder.encode(originalFilename,
+                    StandardCharsets.UTF_8.name());
+            String newEncodedFilename = dir + "/" + uuid + "-" + encodedOriginalFilename;
+            return "https://" + cloudFrontDomain + "/" + newEncodedFilename;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("파일 이름을 인코딩 중 문제 발생", e);
         }
-
-        int resizedWidth = targetWidth;
-        int resizedHeight = targetHeight;
-
-        //리사이징 : width,height 중 큰 값 찾기 -> 짧은 걸 750px로 리사이징, 원본 이미지 비율 유지
-        if (originalWidth >= originalHeight) {
-            resizedWidth = (int) (originalWidth * 750.0 / originalHeight);
-        } else {
-            resizedHeight = (int) (originalHeight * 750.0 / originalWidth);
-        }
-
-        Thumbnails.of(originalImage)
-                .size(resizedWidth, resizedHeight)
-                .outputFormat("jpg")
-                .toOutputStream(outputStream);
-
-        return outputStream.toByteArray();
     }
 
 }
