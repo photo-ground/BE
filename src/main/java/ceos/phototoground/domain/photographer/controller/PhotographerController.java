@@ -62,7 +62,7 @@ public class PhotographerController {
     @GetMapping("/{photographerId}/bottom")
     public ResponseEntity<PhotographerBottomDTO> getPhotographerBottom(@PathVariable Long photographerId,
                                                                        @RequestParam(value = "cursor", required = false) Long cursor,
-                                                                       @RequestParam(value = "size", defaultValue = "15", required = false) int size) {
+                                                                       @RequestParam(value = "size", defaultValue = "9", required = false) int size) {
 
         PhotographerBottomDTO dto = photographerService.getPhotographerBottom(photographerId, cursor, size);
 

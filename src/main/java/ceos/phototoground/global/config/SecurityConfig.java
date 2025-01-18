@@ -63,10 +63,10 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/login", "/", "/api/customer/join", "/api/customer/emails/request",
                         "/api/customer/emails/verify", "/api/photographer/{photographerId}/review",
-                        "api/review/{reviewId}", "/api/spot", "/api/photographer", "/api/photographer/search",
+                        "api/review/{reviewId}", "/api/spot/{spotId}", "/api/photographer", "/api/photographer/search",
                         "/api/photographer/{photographerId}/intro", "/api/photographer/{photographerId}/bottom",
                         "/api/photographer/active",
-                        "/api/posts/{postId}", "/api/posts")
+                        "/api/posts/{postId}", "/api/posts", "/api/spot")
                 .permitAll() // 해당 경로는 모든 사용자가 접근 가능
                 .requestMatchers("/admin").hasRole("ADMIN") // admin 경로는 해당 권한을 가진 사용자만 접근 가능.
                 .requestMatchers("/api/reissue").permitAll() // 리프레시 토큰은 모든 사용자가 접근 가능
