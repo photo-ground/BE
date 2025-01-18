@@ -4,23 +4,25 @@ import ceos.phototoground.domain.photoProfile.entity.PhotoProfile;
 import ceos.phototoground.domain.photoProfile.service.PhotoProfileService;
 import ceos.phototoground.domain.photographer.entity.Photographer;
 import ceos.phototoground.domain.photographer.repository.PhotographerRepository;
-import ceos.phototoground.domain.post.entity.Post;
-import ceos.phototoground.domain.post.entity.QPost;
-import ceos.phototoground.domain.post.repository.PostRepository;
-import ceos.phototoground.domain.postImage.dto.PostImageResponseDTO;
-import ceos.phototoground.domain.postImage.entity.QPostImage;
-import ceos.phototoground.domain.postImage.service.PostImageService;
 import ceos.phototoground.domain.post.dto.PostListResponseDTO;
 import ceos.phototoground.domain.post.dto.PostRequestDTO;
 import ceos.phototoground.domain.post.dto.PostResponseDTO;
 import ceos.phototoground.domain.post.dto.PostsListResponseDTO;
 import ceos.phototoground.domain.post.dto.ProfilePostResponseDTO;
 import ceos.phototoground.domain.post.dto.ProfilePostResponseListDTO;
+import ceos.phototoground.domain.post.entity.Post;
+import ceos.phototoground.domain.post.entity.QPost;
+import ceos.phototoground.domain.post.repository.PostRepository;
+import ceos.phototoground.domain.postImage.dto.PostImageResponseDTO;
 import ceos.phototoground.domain.postImage.entity.PostImage;
+import ceos.phototoground.domain.postImage.entity.QPostImage;
+import ceos.phototoground.domain.postImage.service.PostImageService;
 import ceos.phototoground.domain.spot.entity.Spot;
 import ceos.phototoground.domain.spot.service.SpotService;
 import ceos.phototoground.domain.univ.entity.Univ;
 import ceos.phototoground.domain.univ.service.UnivService;
+import ceos.phototoground.global.exception.CustomException;
+import ceos.phototoground.global.exception.ErrorCode;
 import com.querydsl.core.Tuple;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -92,7 +94,7 @@ public class PostService {
     public PostResponseDTO getPost(Long postId) {
         //이미지 order대로 반환해주기
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 게시글은 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_EXIST));
 
         List<PostImageResponseDTO> imageListDto = postImageService.getPostImages(postId);
 
