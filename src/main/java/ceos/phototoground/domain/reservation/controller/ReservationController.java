@@ -40,12 +40,13 @@ public class ReservationController {
     }
 
     // 예약신청  (로그인 완성된 후 @AuthenticationPrincipal로 수정하기)
-    @PostMapping("/reservation/{photographerId}/{customerId}")
+    @PostMapping("/reservation/{photographerId}")
     public ResponseEntity<Map<String, String>> createReservation(@PathVariable("photographerId") Long photographerId,
                                                                  @RequestBody @Valid
                                                                  RequestReservationDTO requestReservationDTO,
-                                                                 @PathVariable("customerId") Long customerId) {
+                                                                 @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
+        Long customerId = customUserDetails.getCustomer().getId();
         reservationService.createReservation(requestReservationDTO, photographerId, customerId);
 
         Map<String, String> response = new HashMap<>();
