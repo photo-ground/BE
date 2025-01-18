@@ -22,10 +22,11 @@ public class PhotographerIntroDTO {
     private String introduction;
     private Long score;
     private List<String> styleList;
+    private boolean isFollowing;
 
 
     public static PhotographerIntroDTO of(Photographer photographer, PhotoProfile photoProfile,
-                                          List<String> univNameList, List<String> styleList) {
+                                          List<String> univNameList, List<String> styleList, boolean isFollowing) {
         return PhotographerIntroDTO.builder()
                 .photographerName(photoProfile.getNickname())
                 .age(LocalDate.now().getYear() - photographer.getBornYear())
@@ -38,6 +39,7 @@ public class PhotographerIntroDTO {
                 .introduction(photoProfile.getIntroduction())
                 .score(photoProfile.getScore())
                 .styleList(styleList)
+                .isFollowing(isFollowing)
                 .build();
     }
 }
