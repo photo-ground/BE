@@ -3,6 +3,7 @@ package ceos.phototoground.domain.customer.service;
 import ceos.phototoground.domain.customer.dto.CustomerJoinRequestDto;
 import ceos.phototoground.domain.customer.dto.CustomerResponseDto;
 import ceos.phototoground.domain.customer.dto.CustomerUpdateDto;
+import ceos.phototoground.domain.customer.dto.PasswordUpdateDto;
 import ceos.phototoground.domain.customer.entity.Customer;
 import ceos.phototoground.domain.customer.entity.UserRole;
 import ceos.phototoground.domain.customer.repository.CustomerRepository;
@@ -63,15 +64,66 @@ public class CustomerService {
         return CustomerResponseDto.fromEntity(customer);
     }
 
-    @Transactional
+    // 고객 프로필 수정
     public void updateCustomerProfile(Long customerId, CustomerUpdateDto updateDto) {
         // 고객 엔티티 조회
         Customer customer = customerRepository.findById(customerId)
-                                              .orElseThrow(() -> new EntityNotFoundException("Customer not found with id: " + customerId));
+                                              .orElseThrow(() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
 
         // 제공된 데이터 업데이트
         // 변경 사항은 JPA의 영속성 컨텍스트에 의해 자동 저장
         customer.updateProfile(updateDto.getName(), updateDto.getPhone(), updateDto.getGender(), updateDto.getMyUniv());
+    }
+
+    // 고객 비밀번호 수정
+    public void updatePassword(Long customerId, PasswordUpdateDto passwordUpdateDto) {
+        // 고객 엔티티 조회
+        Customer customer = customerRepository.findById(customerId)
+                                              .orElseThrow(() -> new CustomException(ErrorCode.CUSTOMER_NOT_FOUND));
+
+        // 새 비밀번호 검증
+        validateNewPassword(passwordUpdateDto.getPassword(), customer.getPassword());
+
+        // 새 비밀번호 암호화 후 저장
+        String encryptedPassword = bCryptPasswordEncoder.encode(passwordUpdateDto.getPassword());
+        customer.updatePassword(encryptedPassword);
+
+        // 고객 정보 저장
+        customerRepository.save(customer);
+    }
+
+    // 비밀번호 유효성 검증 (일치 여부)
+    private void validateCurrentPassword(String currentPassword, String existingPassword) {
+        if (!bCryptPasswordEncoder.matches(currentPassword, existingPassword)) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD, "현재 비밀번호가 올바르지 않습니다.");
+        }
+    }
+
+    // 비밀번호 유효성 검증
+    private void validateNewPassword(String newPassword, String existingPassword) {
+        if (newPassword == null || newPassword.length() < 8 || newPassword.length() > 12) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD, "새 비밀번호는 8자 이상, 12자 이하로 설정해야 합니다.");
+        }
+
+        StringBuilder errorMessages = new StringBuilder();
+
+        if (!newPassword.matches(".*[a-zA-Z].*")) {
+            errorMessages.append("영문자가 포함되어야 합니다. ");
+        }
+        if (!newPassword.matches(".*\\d.*")) {
+            errorMessages.append("숫자가 포함되어야 합니다. ");
+        }
+        if (!newPassword.matches(".*[\\$!@%&\\*].*")) {
+            errorMessages.append("특수문자가 포함되어야 합니다.");
+        }
+
+        if (errorMessages.length() > 0) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD, errorMessages.toString().trim());
+        }
+
+        if (bCryptPasswordEncoder.matches(newPassword, existingPassword)) {
+            throw new CustomException(ErrorCode.REUSED_PASSWORD);
+        }
     }
 
     public Customer findById(Long customerId) {

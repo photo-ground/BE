@@ -5,6 +5,7 @@ import ceos.phototoground.domain.customer.dto.CustomerEmailDTO;
 import ceos.phototoground.domain.customer.dto.CustomerJoinRequestDto;
 import ceos.phototoground.domain.customer.dto.CustomerResponseDto;
 import ceos.phototoground.domain.customer.dto.CustomerUpdateDto;
+import ceos.phototoground.domain.customer.dto.PasswordUpdateDto;
 import ceos.phototoground.domain.customer.dto.VerificationDTO;
 import ceos.phototoground.domain.customer.service.CustomerService;
 import ceos.phototoground.domain.email.service.EmailService;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -78,8 +80,16 @@ public class CustomerController {
         );
     }
 
-
     // 고객 비밀번호 수정
+    @PatchMapping("/password")
+    public ResponseEntity<SuccessResponseDto<String>> updatePassword(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                 @Valid @RequestBody PasswordUpdateDto passwordUpdateDto) {
+        Long customerId = userDetails.getCustomer().getId();
+
+        customerService.updatePassword(customerId, passwordUpdateDto);
+
+        return ResponseEntity.ok(SuccessResponseDto.successMessage("비밀번호가 성공적으로 변경되었습니다."));
+    }
 
     // 고객 탈퇴 (소프트 탈퇴)
     @PatchMapping("/delete")

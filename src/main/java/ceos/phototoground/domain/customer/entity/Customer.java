@@ -63,4 +63,9 @@ public class Customer extends BaseTimeEntity {
         this.gender = gender;
         this.myUniv = myUniv;
     }
+
+    // 비밀번호 수정 메서드
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
