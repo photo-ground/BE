@@ -18,6 +18,7 @@ public class PostResponseDTO {
     private String univName;
     private List<PostImageResponseDTO> imageList;
     private LocalDateTime createdAt;
+    private String profileUrl;
 
     public static PostResponseDTO of(Post post, List<PostImageResponseDTO> imageListDto, PhotoProfile profile) {
         return PostResponseDTO.builder()
@@ -28,6 +29,7 @@ public class PostResponseDTO {
                 .univName(post.getUniv().getName())
                 .imageList(imageListDto)
                 .createdAt(post.getCreatedAt())
+                .profileUrl(profile.getProfileUrl())
                 .build();
     }
 }
