@@ -7,6 +7,7 @@ import ceos.phototoground.global.jwt.JWTFilter;
 import ceos.phototoground.global.jwt.JWTUtil;
 import ceos.phototoground.global.jwt.LoginFilter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -38,7 +39,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() { // 비밀번호 암호회
+    public BCryptPasswordEncoder bCryptPasswordEncoder() { // 비밀번호 암호화
         // 비밀번호를 안전하게 저장하기 위해 사용하는 BCrypt 해싱 알고리즘.
         // 회원가입 시 비밀번호를 암호화하고, 인증 시 암호화된 비밀번호와 비교하는 데 사용됨.
         return new BCryptPasswordEncoder();
@@ -66,7 +67,7 @@ public class SecurityConfig {
                         "api/review/{reviewId}", "/api/spot", "/api/photographer", "/api/photographer/search",
                         "/api/photographer/{photographerId}/intro", "/api/photographer/{photographerId}/bottom",
                         "/api/photographer/active",
-                        "/api/posts/{postId}", "/api/posts")
+                        "/api/posts/{postId}", "/api/posts", "/error")
                 .permitAll() // 해당 경로는 모든 사용자가 접근 가능
                 .requestMatchers("/admin").hasRole("ADMIN") // admin 경로는 해당 권한을 가진 사용자만 접근 가능.
                 .requestMatchers("/api/reissue").permitAll() // 리프레시 토큰은 모든 사용자가 접근 가능
