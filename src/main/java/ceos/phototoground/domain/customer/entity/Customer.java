@@ -55,4 +55,17 @@ public class Customer extends BaseTimeEntity {
     public void delete() {
         this.isDeleted = true;
     }
+
+    // 회원정보 수정 메서드
+    public void updateProfile(String name, String phone, Gender gender, MyUniv myUniv) {
+        this.name = name;
+        this.phone = phone;
+        this.gender = gender;
+        this.myUniv = myUniv;
+    }
+
+    // 비밀번호 수정 메서드
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
