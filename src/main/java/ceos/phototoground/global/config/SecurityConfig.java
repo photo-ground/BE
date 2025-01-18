@@ -63,7 +63,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/login", "/", "/api/customer/join", "/api/customer/emails/request",
                         "/api/customer/emails/verify", "/api/photographer/{photographerId}/review",
-                        "api/review/{reviewId}", "/api/spot", "/api/photographer", "/api/photographer/search",
+                        "api/review/{reviewId}", "/api/spot/{spotId}", "/api/photographer", "/api/photographer/search",
                         "/api/photographer/{photographerId}/intro", "/api/photographer/{photographerId}/bottom",
                         "/api/photographer/active",
                         "/api/posts/{postId}", "/api/posts")
