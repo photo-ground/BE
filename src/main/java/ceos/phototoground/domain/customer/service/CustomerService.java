@@ -37,8 +37,7 @@ public class CustomerService {
 
         // 이메일 인증 여부 확인
         if (emailService.isCertified(dto.getEmail())) {
-            // 기본 유저 권한은 USER로 설정
-            Customer customer = dto.toEntity(bCryptPasswordEncoder.encode(password), UserRole.USER);
+            Customer customer = dto.toEntity(bCryptPasswordEncoder.encode(password), UserRole.CUSTOMER);
             customerRepository.save(customer);
         } else {
             throw new CustomException(ErrorCode.EMAIL_NOT_CERTIFIED);

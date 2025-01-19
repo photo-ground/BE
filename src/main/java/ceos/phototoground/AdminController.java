@@ -8,9 +8,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ResponseBody
 public class AdminController {
 
-    @GetMapping("/admin")
-    public String adminP() {
+    @GetMapping("/customer_test")
+    public String customer() {
 
-        return "admin Controller";
+        return "현재 고객이십니다";
+    }
+
+    @GetMapping("/photographer_test")
+    public String photographer() {
+
+        return "현재 작가이십니다";
     }
 }

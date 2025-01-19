@@ -1,5 +1,6 @@
 package ceos.phototoground.domain.photographer.entity;
 
+import ceos.phototoground.domain.customer.entity.UserRole;
 import ceos.phototoground.domain.photoProfile.entity.PhotoProfile;
 import ceos.phototoground.global.entity.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
@@ -49,6 +50,10 @@ public class Photographer extends BaseTimeEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private MyUniv myUniv; //작가의 대학교
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private UserRole role; // 역할 추가
 
     @OneToOne(mappedBy = "photographer", cascade = CascadeType.ALL, orphanRemoval = true)
     private PhotoProfile photoProfile; //양방향 연관관계 설정

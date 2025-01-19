@@ -43,6 +43,8 @@ public class QPhotographer extends EntityPathBase<Photographer> {
 
     public final ceos.phototoground.domain.photoProfile.entity.QPhotoProfile photoProfile;
 
+    public final EnumPath<ceos.phototoground.domain.customer.entity.UserRole> role = createEnum("role", ceos.phototoground.domain.customer.entity.UserRole.class);
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 

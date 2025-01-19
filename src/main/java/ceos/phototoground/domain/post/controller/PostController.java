@@ -1,5 +1,7 @@
 package ceos.phototoground.domain.post.controller;
 
+import ceos.phototoground.domain.customer.dto.CustomUserDetails;
+import ceos.phototoground.domain.photographer.entity.Photographer;
 import ceos.phototoground.domain.post.dto.PostRequestDTO;
 import ceos.phototoground.domain.post.dto.PostResponseDTO;
 import ceos.phototoground.domain.post.dto.PostsListResponseDTO;
@@ -9,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,26 +29,33 @@ public class PostController {
     private final PostService postService;
 
     // 게시글 생성
-    @PostMapping("/{photographerId}")
-    public ResponseEntity<Map<String, String>> createPost(@RequestPart PostRequestDTO postInfo,
-                                                          @RequestPart List<MultipartFile> photos,
-                                                          @PathVariable Long photographerId) { //로그인 구현 후 수정
+    @PostMapping
+    public ResponseEntity<Map<String, String>> createPost(
+            @RequestPart PostRequestDTO postInfo,
+            @RequestPart List<MultipartFile> photos,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        //로그인 구현 후, 작가인지 검증하는 로직 필요할듯 (@AuthenticationPrincipal 적용 후 Role 반환)
-        postService.createPost(postInfo, photos, photographerId);
+        // 로그인된 사용자 정보에서 Photographer 객체 가져오기
+        Photographer photographer = userDetails.getPhotographer();
 
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "게시글 생성이 완료되었습니다.");
+        // 게시글 생성 서비스 호출
+        postService.createPost(postInfo, photos, photographer.getId());
+
+        // 성공 응답 메시지 작성
+        Map<String, String> response = Map.of(
+                "status", "success",
+                "message", "게시글 생성이 완료되었습니다."
+        );
+
         return ResponseEntity.ok(response);
     }
 
-
     // 게시글 삭제
-    @DeleteMapping("/{postId}/{photographerId}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<Map<String, String>> deletePost(@PathVariable Long postId,
-                                                          @PathVariable Long photographerId) {
-
-        postService.deletePost(postId, photographerId);
+                                                          @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Photographer photographer = userDetails.getPhotographer();
+        postService.deletePost(postId, photographer.getId());
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "게시글 삭제가 완료되었습니다.");
