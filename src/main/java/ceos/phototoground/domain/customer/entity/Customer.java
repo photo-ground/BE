@@ -1,8 +1,8 @@
 package ceos.phototoground.domain.customer.entity;
 
-import ceos.phototoground.global.entity.BaseTimeEntity;
 import ceos.phototoground.domain.photographer.entity.Gender;
 import ceos.phototoground.domain.photographer.entity.MyUniv;
+import ceos.phototoground.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -46,6 +46,7 @@ public class Customer extends BaseTimeEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 50)
     private UserRole role; // 역할 추가
 
     @Enumerated(EnumType.STRING)

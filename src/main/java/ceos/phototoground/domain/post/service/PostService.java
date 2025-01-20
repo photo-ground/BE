@@ -49,7 +49,7 @@ public class PostService {
     public void createPost(PostRequestDTO dto, List<MultipartFile> photos, Long photographerId) {
 
         Photographer photographer = photographerRepository.findById(photographerId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 작가가 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.PHOTOGRAPHER_NOT_FOUND));
         Univ univ = univService.findUnivById(dto.getUnivId());
 
         //firstImageUrl 안 넣은 상태 -> photos를 s3에 올리고나서 url 반환받은 후에 post 필드에 매핑해주기
@@ -78,9 +78,9 @@ public class PostService {
 
         // 존재하는 게시글인지 확인 & 로그인한 유저 == 게시글작성자 검증
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 게시글이 존재하지 않습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_EXIST));
         if (!photographerId.equals(post.getPhotographer().getId())) {
-            throw new IllegalArgumentException("게시글 작성자와 로그인 한 사용자가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.NOT_POST_OWNER_PHOTOGRAPHER);
         }
 
         //이미지 삭제
