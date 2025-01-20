@@ -20,7 +20,7 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원이 존재하지 않습니다."),
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일 형식입니다."),
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 유효하지 않습니다."),
-    REUSED_PASSWORD(HttpStatus.BAD_REQUEST,"새 비밀번호는 기존 비밀번호와 달라야 합니다."),
+    REUSED_PASSWORD(HttpStatus.BAD_REQUEST, "새 비밀번호는 기존 비밀번호와 달라야 합니다."),
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
     AUTH_HEADER_MISSING(HttpStatus.BAD_REQUEST, "Authorization 헤더가 누락되었습니다."),
 
@@ -68,7 +68,8 @@ public enum ErrorCode {
     EMAIL_NOT_CERTIFIED(HttpStatus.BAD_REQUEST, "이메일 인증을 해주세요."),
 
     //Post
-    POST_NOT_EXIST(HttpStatus.NOT_FOUND, "해당 id의 게시글은 존재하지 않습니다.");
+    POST_NOT_EXIST(HttpStatus.NOT_FOUND, "해당 id의 게시글은 존재하지 않습니다."),
+    NOT_POST_OWNER_PHOTOGRAPHER(HttpStatus.BAD_REQUEST, "게시글 작성자와 로그인 한 사용자가 일치하지 않습니다.");
 
     private final HttpStatus status;
     private final String message;
