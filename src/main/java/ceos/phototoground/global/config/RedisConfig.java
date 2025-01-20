@@ -10,7 +10,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-@EnableRedisRepositories  // Redis를 사용하한 다고 명시해 주는 annotation
+@EnableRedisRepositories  // Redis를 사용한다고 명시해 주는 annotation
 public class RedisConfig {
 
     @Value("${spring.data.redis.host}")
@@ -20,7 +20,7 @@ public class RedisConfig {
     private int port;
 
 
-    // yaml에 저장한 host, post를 연결
+    // yml에 저장한 host, post를 연결
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {  // 이 객체는 Redis Java 클라이언트 라이브러리인 Lettuce를 사용해서 Redis 서버와 연결해줌
         return new LettuceConnectionFactory(host, port);
