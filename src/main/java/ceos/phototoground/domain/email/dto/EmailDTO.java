@@ -31,10 +31,10 @@ public class EmailDTO {
         this.text = "[포토그라운드] 인증번호 [" + code + "]를 입력해주세요.";
     }
 
-    public EmailDTO(Customer customer, Long reservationId) {
-
+    public EmailDTO(Long customerId, Long reservationId, String payerName) {
         this.subject = "포토그라운드 입금 확인 요청 알림";
-        this.text = customer.getId() + " 번 id의 " + customer.getName() + " 고객님께서 " + reservationId
+        this.text = customerId + " 번 id의 " + payerName + " 고객님께서 " + reservationId
                 + " 번 id 예약의 입금 확인을 요청하셨습니다.";
+
     }
 }

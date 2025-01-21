@@ -61,6 +61,7 @@ public enum ErrorCode {
     //Reservation
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 id의 예약은 존재하지 않습니다."),
     NOT_VALID_TYPE_YEAR_MONTH(HttpStatus.BAD_REQUEST, "yearMonth 타입이 잘못되었습니다."),
+    PAYER_ID_DIFFERENT(HttpStatus.BAD_REQUEST, "고객의 id와 요청하신 고객의 id가 다릅니다."),
 
     //Email
     EMAIL_NOT_SENT(HttpStatus.BAD_REQUEST, "이메일 전송이 실패하였습니다."),
