@@ -1,6 +1,7 @@
 package ceos.phototoground.domain.reservation.controller;
 
 import ceos.phototoground.domain.customer.dto.CustomUserDetails;
+import ceos.phototoground.domain.reservation.dto.PaymentRequestDTO;
 import ceos.phototoground.domain.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.domain.reservation.dto.RequestReservationDTO;
 import ceos.phototoground.domain.reservation.dto.ReservationInfoListDTO;
@@ -107,10 +108,12 @@ public class ReservationController {
     // 입금 확인 요청하기
     @PatchMapping("/reservation/{reservationId}/payment")
     public ResponseEntity<ReservationStateDTO> requestCheckPayment(@PathVariable Long reservationId,
-                                                                   @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+                                                                   @AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                                   @RequestBody
+                                                                   PaymentRequestDTO requestDTO) {
 
         Long customerId = customUserDetails.getCustomer().getId();
-        ReservationStateDTO dto = reservationService.requestCheckPayment(reservationId, customerId);
+        ReservationStateDTO dto = reservationService.requestCheckPayment(reservationId, customerId, requestDTO);
 
         return ResponseEntity.ok(dto);
     }
