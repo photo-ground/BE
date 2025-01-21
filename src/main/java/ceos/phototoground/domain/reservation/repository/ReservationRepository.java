@@ -23,12 +23,17 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
                                                                  @Param("month") int month,
                                                                  @Param("today") LocalDate today);
 
+    @Query("SELECT r FROM Reservation r WHERE r.customer.id= :customerId " +
+            "AND r.date>=:today")
+    List<Reservation> findByCustomer_IdAfterToday(@Param("customerId") Long customerId,
+                                                  @Param("today") LocalDate today);
+
 
     @Query("SELECT r FROM Reservation r WHERE r.customer.id = :customerId " +
             "AND r.status <> :status")
     List<Reservation> findByCustomer_IdAndStatusNot(@Param("customerId") Long customerId,
                                                     @Param("status") Status status);
 
-    
+
     List<Reservation> findByCustomer_IdAndStatus(Long customerId, Status status);
 }
