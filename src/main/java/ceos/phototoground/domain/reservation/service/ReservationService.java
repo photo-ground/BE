@@ -12,6 +12,7 @@ import ceos.phototoground.domain.photoProfile.service.PhotoProfileService;
 import ceos.phototoground.domain.photographer.entity.Photographer;
 import ceos.phototoground.domain.photographer.service.PhotographerService;
 import ceos.phototoground.domain.reservation.dto.DateScheduleDTO;
+import ceos.phototoground.domain.reservation.dto.PaymentRequestDTO;
 import ceos.phototoground.domain.reservation.dto.PhotographerReservationInfo;
 import ceos.phototoground.domain.reservation.dto.RequestReservationDTO;
 import ceos.phototoground.domain.reservation.dto.ReservationInfoDTO;
@@ -171,15 +172,19 @@ public class ReservationService {
 
     @Transactional
     // 입금 확인 요청
-    public ReservationStateDTO requestCheckPayment(Long reservationId, Long customerId) {
+    public ReservationStateDTO requestCheckPayment(Long reservationId, Long customerId, PaymentRequestDTO requestDTO) {
 
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
+        if (!customerId.equals(requestDTO.getPayerId())) {
+            throw new CustomException(ErrorCode.PAYER_ID_DIFFERENT);
+        }
+
         reservation.changeStatus(Status.PAYMENT_PENDING);
 
-        Customer customer = customerService.findById(customerId);
-        emailService.sendEmailWithRetry(new EmailDTO(customer, reservationId), username);
+        String payerName = requestDTO.getPayerName();
+        emailService.sendEmailWithRetry(new EmailDTO(customerId, reservationId, payerName), username);
 
         return ReservationStateDTO.of(reservation.getId(), "결제확인중");
 
