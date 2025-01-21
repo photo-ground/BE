@@ -109,6 +109,7 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
         reservation.changeStatus(Status.CANCELED);
+        reservation.changeCanceledReason("고객");
 
         EmailDTO emailDTO = new EmailDTO(reservation);
         emailService.sendEmailWithRetry(emailDTO, username);

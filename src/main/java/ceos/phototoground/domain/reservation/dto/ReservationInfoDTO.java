@@ -16,6 +16,7 @@ public class ReservationInfoDTO {
     private String univName;
     private int bookingNum;
     private String status;
+    private String canceledReason;
     private int price;
     private LocalDate date;
     private LocalTime startTime;
@@ -29,6 +30,7 @@ public class ReservationInfoDTO {
                 .univName(reservation.getUniv().getName())
                 .bookingNum(reservation.getReserveNum())
                 .status(reservation.getStatus().getName())
+                .canceledReason(reservation.getCanceledReason())
                 .price(reservation.getPrice())
                 .date(reservation.getDate())
                 .startTime(reservation.getStartTime())
