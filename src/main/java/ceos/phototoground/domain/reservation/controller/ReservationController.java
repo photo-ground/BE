@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -78,10 +77,10 @@ public class ReservationController {
     // 예약 현황 조회
     @GetMapping("/reservation/info")
     public ResponseEntity<ReservationStatusInfo> getReservationStatus(
-            @RequestParam String yearMonth, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         Long customerId = customUserDetails.getCustomer().getId();
-        ReservationStatusInfo dto = reservationService.getReservationStatus(customerId, yearMonth);
+        ReservationStatusInfo dto = reservationService.getReservationStatus(customerId);
         return ResponseEntity.ok(dto);
     }
 
