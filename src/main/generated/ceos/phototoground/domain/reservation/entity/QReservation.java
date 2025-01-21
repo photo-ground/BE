@@ -24,6 +24,8 @@ public class QReservation extends EntityPathBase<Reservation> {
 
     public final ceos.phototoground.global.entity.QBaseTimeEntity _super = new ceos.phototoground.global.entity.QBaseTimeEntity(this);
 
+    public final StringPath canceledReason = createString("canceledReason");
+
     public final StringPath chatUrl = createString("chatUrl");
 
     //inherited

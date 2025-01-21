@@ -74,6 +74,8 @@ public class Reservation extends BaseTimeEntity {
     @JoinColumn(name = "univ_id")
     private Univ univ;
 
+    private String canceledReason;
+
 
     public static Reservation createReservation(Customer customer, Photographer photographer, Univ univ,
                                                 RequestReservationDTO dto) {
@@ -98,5 +100,9 @@ public class Reservation extends BaseTimeEntity {
 
     public void completeReview() {
         this.reviewComplete = true;
+    }
+
+    public void changeCanceledReason(String canceledReason) {
+        this.canceledReason = canceledReason;
     }
 }
