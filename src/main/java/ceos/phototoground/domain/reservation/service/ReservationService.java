@@ -178,10 +178,6 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
-        if (!customerId.equals(requestDTO.getPayerId())) {
-            throw new CustomException(ErrorCode.PAYER_ID_DIFFERENT);
-        }
-
         reservation.changeStatus(Status.PAYMENT_PENDING);
 
         String payerName = requestDTO.getPayerName();
