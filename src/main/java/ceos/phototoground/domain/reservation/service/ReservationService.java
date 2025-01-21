@@ -32,9 +32,6 @@ import ceos.phototoground.domain.univ.service.UnivService;
 import ceos.phototoground.global.exception.CustomException;
 import ceos.phototoground.global.exception.ErrorCode;
 import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -131,18 +128,9 @@ public class ReservationService {
 
 
     //예약 현황 조회
-    public ReservationStatusInfo getReservationStatus(Long customerId, String yearMonth) {
+    public ReservationStatusInfo getReservationStatus(Long customerId) {
 
-        //유효한 타입인지 검증
-        validateYearMonth(yearMonth);
-
-        YearMonth parsedYearMonth = YearMonth.parse(yearMonth, DateTimeFormatter.ofPattern("yyyy-M"));
-        int year = parsedYearMonth.getYear();
-        int month = parsedYearMonth.getMonthValue();
-
-        List<Reservation> reservations = reservationRepository.findByCustomer_IdAndYearAndMonthAfterToday(customerId,
-                year,
-                month, LocalDate.now());
+        List<Reservation> reservations = reservationRepository.findByCustomer_IdAfterToday(customerId, LocalDate.now());
 
         List<DateScheduleDTO> dateSchedules = reservations.stream().map(DateScheduleDTO::from).toList();
 
@@ -197,14 +185,5 @@ public class ReservationService {
 
     }
 
-    // 유효한 타입인지 확인
-    private void validateYearMonth(String yearMonth) {
-        try {
-            YearMonth.parse(yearMonth); // "2025-01" 형식이 아닌 경우 예외 발생
-        } catch (DateTimeParseException e) {
-            // 유효하지 않은 형식인 경우 CustomException 던지기
-            throw new CustomException(ErrorCode.NOT_VALID_TYPE_YEAR_MONTH);
-        }
-    }
 
 }
