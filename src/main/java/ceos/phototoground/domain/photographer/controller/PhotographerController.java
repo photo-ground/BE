@@ -29,7 +29,7 @@ public class PhotographerController {
     @GetMapping
     public ResponseEntity<PhotographerListDTO> getPhotographerList(
             @RequestParam(value = "cursor", required = false) Long cursor,
-            @RequestParam(value = "size", defaultValue = "15", required = false) int size,
+            @RequestParam(value = "size", defaultValue = "12", required = false) int size,
             @RequestParam(value = "univ", required = false) String univ,
             @RequestParam(value = "gender", required = false) String gender) {
 
