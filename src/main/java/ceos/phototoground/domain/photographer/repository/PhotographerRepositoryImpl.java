@@ -27,9 +27,9 @@ public class PhotographerRepositoryImpl implements PhotographerRepositoryCustom 
         List<Photographer> photographers = jpaQueryFactory
                 .selectFrom(photographer)
                 .leftJoin(photographer.photoProfile, photoProfile).fetchJoin()
-                .join(photographerUniv)
+                .leftJoin(photographerUniv)
                 .on(photographer.id.eq(photographerUniv.photographer.id)) //한 번의 쿼리로 photographerUniv 까지 가져오려고
-                .join(photographerUniv.univ)
+                .leftJoin(photographerUniv.univ)
                 .where(eqUniv(univ, photographerUniv), eqGender(gender, photographer), ltCursorId(cursor, photographer))
                 .orderBy(photographer.id.desc())
                 .limit(size)
