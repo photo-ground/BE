@@ -79,19 +79,19 @@ public class PhotographerService {
 
         List<Tuple> searchProfileList = photoProfileService.findByNicknameContains(name, cursor, size + 1);
 
+        String nextCursor = null;
         boolean hasNext = searchProfileList.size() > size;
 
         if (hasNext) {
             searchProfileList = searchProfileList.subList(0, size);
-        }
 
-        // 마지막으로 반환된 searchProfileList 커서값 반환 (priority+id) -> 다음 요청에 사용될 커서값
-        String nextCursor = photoProfileService.generateNextCursor(searchProfileList, name);
+            // 마지막으로 반환된 searchProfileList 커서값 반환 (priority+id) -> 다음 요청에 사용될 커서값
+            nextCursor = photoProfileService.generateNextCursor(searchProfileList, name);
+        }
 
         List<PhotographerResponseDTO> dtos = new ArrayList<>();
 
         for (Tuple tuple : searchProfileList) {
-            //Photographer photographer= photographerRepository.findById(profile.getPhotographer().getId()).orElseThrow(("해당 프로필에 속하는 작가가 존재하지 않습니다.");
             Photographer photographer = tuple.get(QPhotographer.photographer);
             PhotoProfile profile = tuple.get(QPhotoProfile.photoProfile);
 
@@ -103,26 +103,7 @@ public class PhotographerService {
 
     }
 
-    /*
-    public PhotographerIntroDTO getPhotographerIntro(Long photographerId) {
-
-        Photographer photographer = photographerRepository.findById(photographerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.PHOTOGRAPHER_NOT_FOUND));
-
-        PhotoProfile photoProfile = photographer.getPhotoProfile();
-
-        List<PhotographerUniv> photographerUnivList = photographerUnivService.findByPhotographer_Id(photographerId);
-
-        List<String> univNameList = photographerUnivList.stream()
-                .map(photographerUniv -> photographerUniv.getUniv().getName())
-                .toList();
-
-        List<String> styleList = photoStyleService.findByPhotoProfile(photoProfile);
-
-        return PhotographerIntroDTO.of(photographer, photoProfile, univNameList, styleList);
-    }
-    */
-
+    
     public PhotographerIntroDTO getPhotographerIntro(Long photographerId, CustomUserDetails customUserDetails) {
 
         // 로그인 안 한 사용자
