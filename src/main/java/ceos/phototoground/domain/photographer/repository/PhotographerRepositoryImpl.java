@@ -27,10 +27,11 @@ public class PhotographerRepositoryImpl implements PhotographerRepositoryCustom 
         System.out.println("쿼리DSL size : " + size);
 
         List<Photographer> photographers = jpaQueryFactory
-                .selectFrom(photographer)
+                .selectDistinct(photographer)
+                .from(photographer)
                 .leftJoin(photographer.photoProfile, photoProfile).fetchJoin()
-                .leftJoin(photographerUniv)
-                .on(photographer.id.eq(photographerUniv.photographer.id)) //한 번의 쿼리로 photographerUniv 까지 가져오려고
+                .leftJoin(photographerUniv).on(photographer.id.eq(photographerUniv.photographer.id))
+                .fetchJoin()//한 번의 쿼리로 photographerUniv 까지 가져오려고
                 .leftJoin(photographerUniv.univ)
                 .where(eqUniv(univ, photographerUniv), eqGender(gender, photographer), ltCursorId(cursor, photographer))
                 .orderBy(photographer.id.desc())
@@ -38,7 +39,6 @@ public class PhotographerRepositoryImpl implements PhotographerRepositoryCustom 
                 .fetch();
 
         return photographers;
-
     }
 
     //학교필터링
