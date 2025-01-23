@@ -2,9 +2,9 @@ package ceos.phototoground.domain.photographer.repository;
 
 
 import ceos.phototoground.domain.photoProfile.entity.QPhotoProfile;
+import ceos.phototoground.domain.photographer.entity.Photographer;
 import ceos.phototoground.domain.photographer.entity.QPhotographer;
 import ceos.phototoground.domain.univ.entity.QPhotographerUniv;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -18,7 +18,7 @@ public class PhotographerRepositoryImpl implements PhotographerRepositoryCustom 
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<Tuple> findPhotographerWithNoOffset(Long cursor, int size, String univ, String gender) {
+    public List<Photographer> findPhotographerWithNoOffset(Long cursor, int size, String univ, String gender) {
 
         QPhotographer photographer = QPhotographer.photographer;
         QPhotoProfile photoProfile = QPhotoProfile.photoProfile;
@@ -26,14 +26,13 @@ public class PhotographerRepositoryImpl implements PhotographerRepositoryCustom 
 
         System.out.println("쿼리DSL size : " + size);
 
-        List<Tuple> photographers = jpaQueryFactory
-                .select(photographer, photographerUniv)
-                .distinct()// distinct 추가
+        List<Photographer> photographers = jpaQueryFactory
+                .selectDistinct(photographer)
                 .from(photographer)
                 .leftJoin(photographer.photoProfile, photoProfile).fetchJoin()
                 .leftJoin(photographerUniv).fetchJoin()
                 .on(photographer.id.eq(photographerUniv.photographer.id)) //한 번의 쿼리로 photographerUniv 까지 가져오려고
-                .leftJoin(photographerUniv.univ).fetchJoin()
+                .leftJoin(photographerUniv.univ)
                 .where(eqUniv(univ, photographerUniv), eqGender(gender, photographer), ltCursorId(cursor, photographer))
                 .orderBy(photographer.id.desc())
                 .limit(size)

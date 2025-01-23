@@ -54,7 +54,7 @@ public class PhotographerService {
     public PhotographerListDTO getPhotographerList(Long cursor, int size, String univ, String gender) {
 
         System.out.println("서비스 첫 size : " + size);
-        List<Tuple> photographerList = photographerRepository.findPhotographerWithNoOffset(cursor, size + 1,
+        List<Photographer> photographerList = photographerRepository.findPhotographerWithNoOffset(cursor, size + 1,
                 univ, gender);
 
         System.out.println("photographerList size : " + photographerList.size());
@@ -68,8 +68,8 @@ public class PhotographerService {
 
         List<PhotographerResponseDTO> dtos = new ArrayList<>();
 
-        for (Tuple tuple : photographerList) {
-            Photographer photographer = tuple.get(QPhotographer.photographer);
+        for (Photographer photographer : photographerList) {
+            //Photographer photographer = tuple.get(QPhotographer.photographer);
             PhotoProfile photoProfile = photographer.getPhotoProfile();
             PhotographerResponseDTO dto = PhotographerResponseDTO.of(photographer, photoProfile);
             dtos.add(dto);
