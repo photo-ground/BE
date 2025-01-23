@@ -187,5 +187,12 @@ public class ReservationService {
 
     }
 
+    // 촬영완료
+    @Transactional
+    public void completeReservation(Long reservationId) {
 
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+        reservation.changeStatus(Status.COMPLETED);
+    }
 }

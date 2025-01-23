@@ -24,6 +24,8 @@ public class PhotographerRepositoryImpl implements PhotographerRepositoryCustom 
         QPhotoProfile photoProfile = QPhotoProfile.photoProfile;
         QPhotographerUniv photographerUniv = QPhotographerUniv.photographerUniv;
 
+        System.out.println("쿼리DSL size : " + size);
+
         List<Photographer> photographers = jpaQueryFactory
                 .selectFrom(photographer)
                 .leftJoin(photographer.photoProfile, photoProfile).fetchJoin()
