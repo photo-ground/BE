@@ -27,7 +27,8 @@ public class PhotographerRepositoryImpl implements PhotographerRepositoryCustom 
         System.out.println("쿼리DSL size : " + size);
 
         List<Photographer> photographers = jpaQueryFactory
-                .selectFrom(photographer)
+                .selectDistinct(photographer) // distinct 추가
+                .from(photographer)
                 .leftJoin(photographer.photoProfile, photoProfile).fetchJoin()
                 .leftJoin(photographerUniv)
                 .on(photographer.id.eq(photographerUniv.photographer.id)) //한 번의 쿼리로 photographerUniv 까지 가져오려고
