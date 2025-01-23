@@ -33,6 +33,7 @@ public class PhotographerController {
             @RequestParam(value = "univ", required = false) String univ,
             @RequestParam(value = "gender", required = false) String gender) {
 
+        System.out.println("컨트롤러 size " + size);
         PhotographerListDTO dto = photographerService.getPhotographerList(cursor, size, univ, gender);
 
         return ResponseEntity.ok(dto);
