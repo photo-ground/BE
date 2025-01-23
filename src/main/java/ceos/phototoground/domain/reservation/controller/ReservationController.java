@@ -118,4 +118,16 @@ public class ReservationController {
         return ResponseEntity.ok(dto);
     }
 
+    // 촬영완료
+    @PatchMapping("/reservation/{reservationId}/complete")
+    public ResponseEntity<Map<String, String>> completeReservation(@PathVariable("reservationId") Long reservationId) {
+
+        reservationService.completeReservation(reservationId);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "촬영이 완료되었습니다.");
+        return ResponseEntity.ok(response);
+
+    }
+
 }
