@@ -1,8 +1,8 @@
 package ceos.phototoground.domain.photographer.repository;
 
-import com.querydsl.core.Tuple;
+import ceos.phototoground.domain.photographer.entity.Photographer;
 import java.util.List;
 
 public interface PhotographerRepositoryCustom {
-    List<Tuple> findPhotographerWithNoOffset(Long cursor, int size, String univ, String gender);
+    List<Photographer> findPhotographerWithNoOffset(Long cursor, int size, String univ, String gender);
 }
