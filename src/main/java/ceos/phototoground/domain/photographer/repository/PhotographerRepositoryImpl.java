@@ -30,9 +30,9 @@ public class PhotographerRepositoryImpl implements PhotographerRepositoryCustom 
                 .selectDistinct(photographer) // distinct 추가
                 .from(photographer)
                 .leftJoin(photographer.photoProfile, photoProfile).fetchJoin()
-                .leftJoin(photographerUniv)
+                .leftJoin(photographerUniv).fetchJoin()
                 .on(photographer.id.eq(photographerUniv.photographer.id)) //한 번의 쿼리로 photographerUniv 까지 가져오려고
-                .leftJoin(photographerUniv.univ)
+                .leftJoin(photographerUniv.univ).fetchJoin()
                 .where(eqUniv(univ, photographerUniv), eqGender(gender, photographer), ltCursorId(cursor, photographer))
                 .orderBy(photographer.id.desc())
                 .limit(size)
