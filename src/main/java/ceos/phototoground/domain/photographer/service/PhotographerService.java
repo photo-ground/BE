@@ -53,14 +53,18 @@ public class PhotographerService {
 
     public PhotographerListDTO getPhotographerList(Long cursor, int size, String univ, String gender) {
 
+        System.out.println("서비스 첫 size : " + size);
         List<Photographer> photographerList = photographerRepository.findPhotographerWithNoOffset(cursor, size + 1,
                 univ, gender);
 
+        System.out.println("photographerList size : " + photographerList.size());
         boolean hasNext = photographerList.size() > size;
 
         if (hasNext) {
             photographerList = photographerList.subList(0, size);
         }
+        System.out.println("hasNext 후 photographerList size : " + photographerList.size());
+        System.out.println("hasNext 불린 값 : " + hasNext);
 
         List<PhotographerResponseDTO> dtos = new ArrayList<>();
 
@@ -103,7 +107,7 @@ public class PhotographerService {
 
     }
 
-    
+
     public PhotographerIntroDTO getPhotographerIntro(Long photographerId, CustomUserDetails customUserDetails) {
 
         // 로그인 안 한 사용자
