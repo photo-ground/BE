@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -57,15 +59,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication authentication) throws IOException {
         // 인증된 사용자 정보 가져오기
-        String username = authentication.getName(); //username 대신 email 사용중
+        String username = authentication.getName(); // username 대신 email 사용 중
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        String role = authorities.iterator().next().getAuthority(); // 첫 번째 권한 추출
 
-        // JWT 토큰 생성 (Access Token: 10분, Refresh Token: 24시간)
+        // 단일 권한 추출
+        String role = authorities.iterator().next().getAuthority();
+
+        // JWT 토큰 생성 (Access Token: 1시간, Refresh Token: 24시간)
         String accessToken = jwtUtil.createJwt("access", username, role, 3600000L); // 1시간
         String refreshToken = jwtUtil.createJwt("refresh", username, role, 86400000L); // 24시간
 
-        //Refresh 토큰 저장
+        // Refresh 토큰 저장
         addRefreshEntity(username, refreshToken, 86400000L);
 
         // Access Token을 헤더에 추가
@@ -75,11 +79,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Cookie refreshCookie = createCookie("refresh", refreshToken);
         response.addCookie(refreshCookie);
 
-        // 응답 바디에 성공 메시지 추가
+        // 응답 바디에 성공 메시지와 사용자 정보 (권한 포함) 추가
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        SuccessResponseDto<String> successResponse = SuccessResponseDto.successMessage("로그인 성공");
+        // 사용자 데이터 구성
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("username", username);
+        userData.put("role", role); // 단일 권한 추가
+
+        // 성공 응답 생성
+        SuccessResponseDto<Map<String, Object>> successResponse = SuccessResponseDto.success(
+                200,
+                "로그인 성공",
+                userData
+        );
+
+        // 응답 반환
         response.getWriter().write(new ObjectMapper().writeValueAsString(successResponse));
         response.getWriter().flush();
     }
