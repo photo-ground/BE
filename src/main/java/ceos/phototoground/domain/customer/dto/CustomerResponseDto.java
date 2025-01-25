@@ -18,6 +18,7 @@ public class CustomerResponseDto {
     private String phone;
     private Gender gender;
     private String univ;
+    private String role;
 
     // 정적 메서드: Entity → DTO 변환
     public static CustomerResponseDto fromEntity(Customer customer) {
@@ -28,6 +29,7 @@ public class CustomerResponseDto {
                                   .phone(customer.getPhone())
                                   .gender(customer.getGender())
                                   .univ(customer.getMyUniv().getName())
+                                  .role(customer.getRole().getAuthority())
                                   .build();
     }
 }
