@@ -1,6 +1,7 @@
 package ceos.phototoground.domain.photographer.service;
 
 import ceos.phototoground.domain.customer.dto.CustomUserDetails;
+import ceos.phototoground.domain.customer.entity.UserRole;
 import ceos.phototoground.domain.follow.entity.Follow;
 import ceos.phototoground.domain.follow.service.FollowService;
 import ceos.phototoground.domain.photoProfile.entity.PhotoProfile;
@@ -8,6 +9,7 @@ import ceos.phototoground.domain.photoProfile.entity.QPhotoProfile;
 import ceos.phototoground.domain.photoProfile.service.PhotoProfileService;
 import ceos.phototoground.domain.photoProfile.service.PhotoStyleService;
 import ceos.phototoground.domain.photographer.dto.PhotographerBottomDTO;
+import ceos.phototoground.domain.photographer.dto.PhotographerIdDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerIntroDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerListDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerResponseDTO;
@@ -115,9 +117,17 @@ public class PhotographerService {
 
         // 로그인 한 사용자
         if (customUserDetails != null) {
-            Long customerId = customUserDetails.getCustomer().getId();
-            Follow follow = followService.findByCustomerAndPhotographer_Id(customerId, photographerId);
-            isFollowing = follow != null;
+            // 고객인지 작가인지
+            String authority = customUserDetails.getAuthorities().iterator().next().getAuthority();
+            UserRole role = UserRole.fromAuthority(authority);
+            Long customerId = (role == UserRole.CUSTOMER) ?
+                    customUserDetails.getCustomer().getId() :
+                    null;
+            // 고객이라면 following 상태 반영
+            if (customerId != null) {
+                Follow follow = followService.findByCustomerAndPhotographer_Id(customerId, photographerId);
+                isFollowing = follow != null;
+            }
         }
 
         Photographer photographer = photographerRepository.findById(photographerId)
@@ -135,7 +145,17 @@ public class PhotographerService {
 
         return PhotographerIntroDTO.of(photographer, photoProfile, univNameList, styleList, isFollowing);
     }
-
+/*
+    // 로그인 한 사람이 페이지 주인인지
+    private boolean myPage(Long photographerId, CustomUserDetails customUserDetails) {
+        String authority = customUserDetails.getAuthorities().iterator().next().getAuthority();
+        UserRole role = UserRole.fromAuthority(authority);
+        if (role == UserRole.PHOTOGRAPHER) {
+            return photographerId.equals(customUserDetails.getPhotographer().getId());
+        }
+        return false;
+    }
+*/
 
     public PhotographerBottomDTO getPhotographerBottom(Long photographerId, Long cursor, int size) {
 
@@ -184,5 +204,10 @@ public class PhotographerService {
     public Photographer findById(Long photographerId) {
         return photographerRepository.findById(photographerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PHOTOGRAPHER_NOT_FOUND));
+    }
+
+    public PhotographerIdDTO getMyId(CustomUserDetails customUserDetails) {
+        Long myId = customUserDetails.getPhotographer().getId();
+        return PhotographerIdDTO.from(myId);
     }
 }
