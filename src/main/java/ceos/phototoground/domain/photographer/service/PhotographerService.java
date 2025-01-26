@@ -117,7 +117,7 @@ public class PhotographerService {
 
         // 로그인 한 사용자
         if (customUserDetails != null) {
-            // 고객인지 작가인지 확인
+            // 고객인지 작가인지
             String authority = customUserDetails.getAuthorities().iterator().next().getAuthority();
             UserRole role = UserRole.fromAuthority(authority);
             Long customerId = (role == UserRole.CUSTOMER) ?
