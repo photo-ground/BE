@@ -117,21 +117,17 @@ public class PhotographerService {
 
         // 로그인 한 사용자
         if (customUserDetails != null) {
-
-            // 내가 마이페이지에 접속한 게 아닌 경우
-            if (!myPage(photographerId, customUserDetails)) {
-                String authority = customUserDetails.getAuthorities().iterator().next().getAuthority();
-                UserRole role = UserRole.fromAuthority(authority);
-                Long customerId = (role == UserRole.CUSTOMER) ?
-                        customUserDetails.getCustomer().getId() :
-                        null;
-                // 고객이라면
-                if (customerId != null) {
-                    Follow follow = followService.findByCustomerAndPhotographer_Id(customerId, photographerId);
-                    isFollowing = follow != null;
-                }
+            // 고객인지 작가인지 확인
+            String authority = customUserDetails.getAuthorities().iterator().next().getAuthority();
+            UserRole role = UserRole.fromAuthority(authority);
+            Long customerId = (role == UserRole.CUSTOMER) ?
+                    customUserDetails.getCustomer().getId() :
+                    null;
+            // 고객이라면 following 상태 반영
+            if (customerId != null) {
+                Follow follow = followService.findByCustomerAndPhotographer_Id(customerId, photographerId);
+                isFollowing = follow != null;
             }
-
         }
 
         Photographer photographer = photographerRepository.findById(photographerId)
@@ -149,7 +145,7 @@ public class PhotographerService {
 
         return PhotographerIntroDTO.of(photographer, photoProfile, univNameList, styleList, isFollowing);
     }
-
+/*
     // 로그인 한 사람이 페이지 주인인지
     private boolean myPage(Long photographerId, CustomUserDetails customUserDetails) {
         String authority = customUserDetails.getAuthorities().iterator().next().getAuthority();
@@ -159,7 +155,7 @@ public class PhotographerService {
         }
         return false;
     }
-
+*/
 
     public PhotographerBottomDTO getPhotographerBottom(Long photographerId, Long cursor, int size) {
 
