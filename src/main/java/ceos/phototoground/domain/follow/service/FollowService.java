@@ -71,7 +71,7 @@ public class FollowService {
     }
 
     public Follow findByCustomerAndPhotographer_Id(Long customerId, Long photographerId) {
-
+        
         return followRepository.findByCustomer_IdAndPhotographer_Id(customerId, photographerId);
     }
 }
