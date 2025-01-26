@@ -33,12 +33,10 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String accessToken = request.getHeader("Authorization");
-        System.out.println("🔍 [JWTFilter] 요청에서 Authorization 헤더를 가져왔습니다: " + accessToken);
 
         if (accessToken != null && accessToken.startsWith("Bearer ")) {
             accessToken = accessToken.substring(7);
         } else {
-            System.out.println("⚠️ [JWTFilter] 유효한 Authorization 헤더를 찾을 수 없습니다. 인증 없이 필터 체인을 진행합니다.");
             filterChain.doFilter(request, response);
             return;
         }
@@ -72,7 +70,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
             // SecurityContext에 인증 정보 설정
             SecurityContextHolder.getContext().setAuthentication(authToken);
-            System.out.println("🔒 [JWTFilter] SecurityContext에 인증 정보를 설정했습니다. 사용자: " + email);
 
         } catch (ExpiredJwtException e) {
             sendErrorResponse(response, "토큰이 만료되었습니다.", HttpServletResponse.SC_UNAUTHORIZED);
