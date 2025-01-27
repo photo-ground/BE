@@ -1,10 +1,12 @@
 package ceos.phototoground.global.jwt;
 
 import ceos.phototoground.domain.customer.dto.LoginRequestDto;
+import ceos.phototoground.domain.photographer.repository.PhotographerRepository;
 import ceos.phototoground.global.dto.ErrorResponseDto;
 import ceos.phototoground.global.dto.SuccessResponseDto;
 import ceos.phototoground.global.entity.RefreshEntity;
 import ceos.phototoground.global.entity.RefreshRepository;
+import ceos.phototoground.global.util.SpringContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
@@ -30,6 +32,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
+    private final PhotographerRepository photographerRepository;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -87,6 +90,22 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Map<String, Object> userData = new HashMap<>();
         userData.put("username", username);
         userData.put("role", role); // 단일 권한 추가
+
+        // 첫 로그인 여부 확인 및 응답 추가 (Photographer만 해당)
+        if (role.equals("ROLE_PHOTOGRAPHER")) { // Photographer 역할인 경우
+            PhotographerRepository photographerRepository = // Repository 주입
+                    SpringContext.getBean(PhotographerRepository.class);
+
+            photographerRepository.findByEmail(username).ifPresent(photographer -> {
+                userData.put("isFirst", photographer.isFirst());
+
+                // 첫 로그인이라면 isFirst 업데이트
+                if (photographer.isFirst()) {
+                    photographer.markAsLoggedIn(); // 첫 로그인 이후 false로 변경
+                    photographerRepository.save(photographer);
+                }
+            });
+        }
 
         // 성공 응답 생성
         SuccessResponseDto<Map<String, Object>> successResponse = SuccessResponseDto.success(
