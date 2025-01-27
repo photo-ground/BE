@@ -2,18 +2,23 @@ package ceos.phototoground.domain.photographer.controller;
 
 
 import ceos.phototoground.domain.customer.dto.CustomUserDetails;
+import ceos.phototoground.domain.customer.dto.PasswordUpdateDto;
 import ceos.phototoground.domain.photographer.dto.PhotographerBottomDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerIntroDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerListDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerResponseDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerSearchListDTO;
 import ceos.phototoground.domain.photographer.service.PhotographerService;
+import ceos.phototoground.global.dto.SuccessResponseDto;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +29,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class PhotographerController {
 
     private final PhotographerService photographerService;
+
+    // 작가 비밀번호 수정
+    @PatchMapping("/password")
+    public ResponseEntity<SuccessResponseDto<String>> updatePassword(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                                                     @Valid @RequestBody PasswordUpdateDto passwordUpdateDto) {
+        Long photographerId = userDetails.getPhotographer().getId();
+
+        photographerService.updatePassword(photographerId, passwordUpdateDto);
+
+        return ResponseEntity.ok(SuccessResponseDto.successMessage("비밀번호가 성공적으로 변경되었습니다."));
+    }
 
     // 작가 리스트 조회 (필터링 포함)
     @GetMapping
