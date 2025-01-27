@@ -23,6 +23,7 @@ import ceos.phototoground.domain.reservation.dto.ReservationStatusInfo;
 import ceos.phototoground.domain.reservation.entity.Reservation;
 import ceos.phototoground.domain.reservation.entity.Status;
 import ceos.phototoground.domain.reservation.repository.ReservationRepository;
+import ceos.phototoground.domain.review.service.ReviewService;
 import ceos.phototoground.domain.schedule.dto.WeekDaySchedule;
 import ceos.phototoground.domain.schedule.entity.Schedule;
 import ceos.phototoground.domain.schedule.service.ScheduleService;
@@ -55,6 +56,7 @@ public class ReservationService {
     private final PhotographerService photographerService;
     private final CustomerService customerService;
     private final EmailService emailService;
+    private final ReviewService reviewService;
 
     // 포그 이메일 계정
     @Value("${spring.mail.username}")
@@ -166,7 +168,10 @@ public class ReservationService {
 
         List<Reservation> reservations = reservationRepository.findByCustomer_IdAndStatus(customerId, Status.COMPLETED);
 
-        List<ReservationInfoDTO> dtos = reservations.stream().map(ReservationInfoDTO::from).toList();
+        List<ReservationInfoDTO> dtos = reservations.stream().map(reservation -> {
+            boolean isReviewed = reviewService.existsByCustomerIdAndReservationId(customerId, reservation.getId());
+            return ReservationInfoDTO.of(reservation, isReviewed);
+        }).toList();
         return ReservationInfoListDTO.from(dtos);
     }
 

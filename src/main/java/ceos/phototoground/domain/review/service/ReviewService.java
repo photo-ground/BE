@@ -1,10 +1,9 @@
 package ceos.phototoground.domain.review.service;
 
-import ceos.phototoground.domain.reservation.entity.Status;
-import org.springframework.transaction.annotation.Transactional;
 import ceos.phototoground.domain.photographer.entity.Photographer;
 import ceos.phototoground.domain.photographer.repository.PhotographerRepository;
 import ceos.phototoground.domain.reservation.entity.Reservation;
+import ceos.phototoground.domain.reservation.entity.Status;
 import ceos.phototoground.domain.reservation.repository.ReservationRepository;
 import ceos.phototoground.domain.review.dto.PhotographerReviewsResponseDto;
 import ceos.phototoground.domain.review.dto.ReviewRequestDto;
@@ -16,6 +15,7 @@ import ceos.phototoground.global.exception.ErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class ReviewService {
     public ReviewResponseDto createReview(Long customerId, Long reservationId, ReviewRequestDto reviewRequestDto) {
         // 예약 정보 조회
         Reservation reservation = reservationRepository.findById(reservationId)
-                                                       .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.RESERVATION_NOT_FOUND));
 
         // 예약의 고객 ID와 현재 로그인된 고객 ID 일치 여부 확인
         if (!reservation.getCustomer().getId().equals(customerId)) {
@@ -50,11 +50,11 @@ public class ReviewService {
 
         // 리뷰 생성 및 저장
         Review review = Review.builder()
-                              .content(reviewRequestDto.getContent())
-                              .score(reviewRequestDto.getScore())
-                              .customer(reservation.getCustomer())
-                              .reservation(reservation)
-                              .build();
+                .content(reviewRequestDto.getContent())
+                .score(reviewRequestDto.getScore())
+                .customer(reservation.getCustomer())
+                .reservation(reservation)
+                .build();
 
         reviewRepository.save(review);
 
@@ -69,7 +69,7 @@ public class ReviewService {
     public PhotographerReviewsResponseDto getPhotographerReviews(Long photographerId) {
         // 작가 정보 확인
         Photographer photographer = photographerRepository.findById(photographerId)
-                                                          .orElseThrow(() -> new CustomException(ErrorCode.PHOTOGRAPHER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.PHOTOGRAPHER_NOT_FOUND));
 
         // 작가에 대한 모든 리뷰 조회 (최신 순 정렬)
         List<Review> reviews = reviewRepository.findByReservationPhotographerIdOrderByCreatedAtDesc(photographerId);
@@ -77,21 +77,21 @@ public class ReviewService {
         // 리뷰 개수와 평균 점수 계산
         int count = reviews.size();
         double averageScore = reviews.stream()
-                                     .mapToInt(Review::getScore)
-                                     .average()
-                                     .orElse(0.0);
+                .mapToInt(Review::getScore)
+                .average()
+                .orElse(0.0);
 
         // 리뷰 목록 변환
         List<ReviewResponseDto> reviewDetails = reviews.stream()
-                                                                                    .map(ReviewResponseDto::fromEntity)
-                                                                                    .toList();
+                .map(ReviewResponseDto::fromEntity)
+                .toList();
 
         // 응답 DTO 생성
         return PhotographerReviewsResponseDto.builder()
-                                             .count(count)
-                                             .averageScore(averageScore)
-                                             .reviews(reviewDetails)
-                                             .build();
+                .count(count)
+                .averageScore(averageScore)
+                .reviews(reviewDetails)
+                .build();
     }
 
     // 고객의 리뷰 전체 조회
@@ -105,29 +105,34 @@ public class ReviewService {
 
         // 평균 평점 계산
         double averageScore = reviews.stream()
-                                     .mapToInt(Review::getScore)
-                                     .average()
-                                     .orElse(0.0);
+                .mapToInt(Review::getScore)
+                .average()
+                .orElse(0.0);
 
         // 리뷰 목록 변환
         List<ReviewResponseDto> reviewDetails = reviews.stream()
-                                                       .map(ReviewResponseDto::fromEntity)
-                                                       .toList();
+                .map(ReviewResponseDto::fromEntity)
+                .toList();
         // 응답 DTO 생성
         return PhotographerReviewsResponseDto.builder()
-                                             .count(count)
-                                             .averageScore(averageScore)
-                                             .reviews(reviewDetails)
-                                             .build();
+                .count(count)
+                .averageScore(averageScore)
+                .reviews(reviewDetails)
+                .build();
     }
 
     // 리뷰 단건 조회
     public ReviewResponseDto getReviewById(Long reviewId) {
         // 리뷰 조회
         Review review = reviewRepository.findById(reviewId)
-                                        .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.REVIEW_NOT_FOUND));
 
         // 응답 DTO로 변환
         return ReviewResponseDto.fromEntity(review);
+    }
+
+    public boolean existsByCustomerIdAndReservationId(Long customerId, Long reservationId) {
+
+        return reviewRepository.existsByCustomerIdAndReservationId(customerId, reservationId);
     }
 }

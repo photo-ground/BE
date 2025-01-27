@@ -12,4 +12,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // 특정 고객이 작성한 리뷰를 최신순으로 조회
     List<Review> findByCustomerIdOrderByCreatedAtDesc(Long customerId);
+
+    boolean existsByCustomerIdAndReservationId(Long customerId, Long reservationId);
 }
