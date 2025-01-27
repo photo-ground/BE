@@ -4,6 +4,7 @@ package ceos.phototoground.domain.photographer.controller;
 import ceos.phototoground.domain.customer.dto.CustomUserDetails;
 import ceos.phototoground.domain.customer.dto.PasswordUpdateDto;
 import ceos.phototoground.domain.photographer.dto.PhotographerBottomDTO;
+import ceos.phototoground.domain.photographer.dto.PhotographerIdDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerIntroDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerListDTO;
 import ceos.phototoground.domain.photographer.dto.PhotographerResponseDTO;
@@ -68,16 +69,6 @@ public class PhotographerController {
 
     }
 
-    /*
-    // 특정 작가 상단부 조회
-    @GetMapping("/{photographerId}/intro")
-    public ResponseEntity<PhotographerIntroDTO> getPhotographerIntro(@PathVariable Long photographerId) {
-
-        PhotographerIntroDTO dto = photographerService.getPhotographerIntro(photographerId);
-
-        return ResponseEntity.ok(dto);
-    }
-    */
 
     // 특정 작가 상단부 조회
     @GetMapping("/{photographerId}/intro")
@@ -85,10 +76,9 @@ public class PhotographerController {
                                                                      @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
         PhotographerIntroDTO dto = photographerService.getPhotographerIntro(photographerId, customUserDetails);
-
+        
         return ResponseEntity.ok(dto);
     }
-
 
     // 특정 작가 하단부 조회
     @GetMapping("/{photographerId}/bottom")
@@ -110,5 +100,13 @@ public class PhotographerController {
         PhotographerListDTO photographerListDTO = PhotographerListDTO.of(dtos, false);
 
         return ResponseEntity.ok(photographerListDTO);
+    }
+
+    // 내 id 찾기
+    @GetMapping("/myId")
+    public ResponseEntity<PhotographerIdDTO> getMyId(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        PhotographerIdDTO dto = photographerService.getMyId(customUserDetails);
+        return ResponseEntity.ok(dto);
     }
 }
