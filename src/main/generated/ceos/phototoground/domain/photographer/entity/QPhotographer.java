@@ -35,6 +35,8 @@ public class QPhotographer extends EntityPathBase<Photographer> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final BooleanPath isFirst = createBoolean("isFirst");
+
     public final EnumPath<MyUniv> myUniv = createEnum("myUniv", MyUniv.class);
 
     public final StringPath password = createString("password");

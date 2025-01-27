@@ -1,6 +1,8 @@
 package ceos.phototoground.domain.photographer.service;
 
 import ceos.phototoground.domain.customer.dto.CustomUserDetails;
+import ceos.phototoground.domain.customer.dto.PasswordUpdateDto;
+import ceos.phototoground.domain.customer.entity.Customer;
 import ceos.phototoground.domain.customer.entity.UserRole;
 import ceos.phototoground.domain.follow.entity.Follow;
 import ceos.phototoground.domain.follow.service.FollowService;
@@ -30,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,14 +47,31 @@ public class PhotographerService {
     private final PhotoStyleService photoStyleService;
     private final PostService postService;
     private final FollowService followService;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
-    @Transactional
     public Photographer findPhotographerById(Long photographerId) {
         return photographerRepository.findById(photographerId)
                 .orElseThrow(() -> new CustomException(ErrorCode.PHOTOGRAPHER_NOT_FOUND));
     }
 
+    // 작가 비밀번호 수정
+    @Transactional
+    public void updatePassword(Long photographerId, PasswordUpdateDto passwordUpdateDto) {
+        // 고객 엔티티 조회
+        Photographer photographer = photographerRepository.findById(photographerId)
+                                              .orElseThrow(() -> new CustomException(ErrorCode.PHOTOGRAPHER_NOT_FOUND));
+
+        // 새 비밀번호 검증
+        validateNewPassword(passwordUpdateDto.getPassword(), photographer.getPassword());
+
+        // 새 비밀번호 암호화 후 저장
+        String encryptedPassword = bCryptPasswordEncoder.encode(passwordUpdateDto.getPassword());
+        photographer.updatePassword(encryptedPassword);
+
+        // 작가 정보 저장
+        photographerRepository.save(photographer);
+    }
 
     public PhotographerListDTO getPhotographerList(Long cursor, int size, String univ, String gender) {
 
@@ -206,6 +226,33 @@ public class PhotographerService {
                 .orElseThrow(() -> new CustomException(ErrorCode.PHOTOGRAPHER_NOT_FOUND));
     }
 
+    // 비밀번호 유효성 검증
+    private void validateNewPassword(String newPassword, String existingPassword) {
+        if (newPassword == null || newPassword.length() < 8 || newPassword.length() > 12) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD, "새 비밀번호는 8자 이상, 12자 이하로 설정해야 합니다.");
+        }
+
+        StringBuilder errorMessages = new StringBuilder();
+
+        if (!newPassword.matches(".*[a-zA-Z].*")) {
+            errorMessages.append("영문자가 포함되어야 합니다. ");
+        }
+        if (!newPassword.matches(".*\\d.*")) {
+            errorMessages.append("숫자가 포함되어야 합니다. ");
+        }
+        if (!newPassword.matches(".*[\\$!@%&\\*].*")) {
+            errorMessages.append("특수문자가 포함되어야 합니다.");
+        }
+
+        if (errorMessages.length() > 0) {
+            throw new CustomException(ErrorCode.INVALID_PASSWORD, errorMessages.toString().trim());
+        }
+
+        if (bCryptPasswordEncoder.matches(newPassword, existingPassword)) {
+            throw new CustomException(ErrorCode.REUSED_PASSWORD);
+        }
+    }
+  
     public PhotographerIdDTO getMyId(CustomUserDetails customUserDetails) {
         Long myId = customUserDetails.getPhotographer().getId();
         return PhotographerIdDTO.from(myId);
