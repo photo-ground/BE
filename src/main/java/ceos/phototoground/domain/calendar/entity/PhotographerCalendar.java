@@ -1,7 +1,7 @@
 package ceos.phototoground.domain.calendar.entity;
 
-import ceos.phototoground.global.entity.BaseTimeEntity;
 import ceos.phototoground.domain.photographer.entity.Photographer;
+import ceos.phototoground.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @AllArgsConstructor
-public class PhotographerCalendar extends BaseTimeEntity{
+public class PhotographerCalendar extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
