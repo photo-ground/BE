@@ -4,6 +4,7 @@ import ceos.phototoground.domain.customer.entity.Customer;
 import ceos.phototoground.domain.follow.dto.FollowResponseDto;
 import ceos.phototoground.domain.follow.entity.Follow;
 import ceos.phototoground.domain.follow.repository.FollowRepository;
+import ceos.phototoground.domain.photoProfile.entity.PhotoProfile;
 import ceos.phototoground.domain.photographer.entity.Photographer;
 import ceos.phototoground.domain.photographer.repository.PhotographerRepository;
 import ceos.phototoground.global.exception.CustomException;
@@ -43,6 +44,12 @@ public class FollowService {
                 .build();
 
         followRepository.save(follow);
+
+        // PhotoProfile의 followerNum 증가
+        PhotoProfile profile = photographer.getPhotoProfile();
+        if (profile != null) {
+            profile.increaseFollower();
+        }
     }
 
 
@@ -59,6 +66,12 @@ public class FollowService {
 
         // 팔로우 취소
         followRepository.delete(follow);
+
+        // PhotoProfile의 followerNum 감소
+        PhotoProfile profile = photographer.getPhotoProfile();
+        if (profile != null) {
+            profile.decreaseFollower();
+        }
     }
 
     public List<FollowResponseDto> getAllFollowedPhotographers(Customer customer) {

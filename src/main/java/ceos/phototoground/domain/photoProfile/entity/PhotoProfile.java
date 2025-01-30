@@ -61,4 +61,18 @@ public class PhotoProfile extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "photoProfile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PhotoStyle> photoStyles; // 작가의 촬영 스타일
+
+    public void increaseFollower() {
+        if (this.followerNum == null) {
+            this.followerNum = 1L;
+        } else {
+            this.followerNum++;
+        }
+    }
+
+    public void decreaseFollower() {
+        if (this.followerNum != null && this.followerNum > 0) {
+            this.followerNum--;
+        }
+    }
 }
