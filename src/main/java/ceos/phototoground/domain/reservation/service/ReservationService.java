@@ -194,7 +194,7 @@ public class ReservationService {
     }
 
     // 스케줄링으로 촬영 당일날 촬영 진행 상태 변경
-    @Scheduled(cron = "0 16 0 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void changeFilmingStatus() {
 
