@@ -38,6 +38,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -190,6 +191,16 @@ public class ReservationService {
 
         return ReservationStateDTO.of(reservation.getId(), "결제확인중");
 
+    }
+
+    // 스케줄링으로 촬영 당일날 촬영 진행 상태 변경
+    @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
+    public void changeFilmingStatus() {
+
+        LocalDate now = LocalDate.now();
+        List<Reservation> reservation = reservationRepository.findByDate(now);
+        reservation.forEach(resv -> resv.changeStatus(Status.FILMING));
     }
 
     // 촬영완료
